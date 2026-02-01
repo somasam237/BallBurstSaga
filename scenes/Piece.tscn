@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://dtlnagq7aeium"]
+
+[ext_resource type="Script" uid="uid://dukt053apdhki" path="res://scripts/Piece.gd" id="1_fnypl"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_x8fbi"]
+
+[node name="Piece" type="Node2D"]
+script = ExtResource("1_fnypl")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="Area" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area"]
+shape = SubResource("CircleShape2D_x8fbi")

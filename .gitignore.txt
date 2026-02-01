@@ -1,0 +1,13 @@
+# Godot 4.x
+.godot/
+.import/
+
+# Godot exports (optional)
+export/
+*.exe
+*.pck
+*.zip
+
+# OS junk
+Thumbs.db
+.DS_Store

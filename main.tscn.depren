@@ -1,0 +1,103 @@
+[gd_scene load_steps=10 format=3 uid="uid://dteopqsjohcok"]
+
+[ext_resource type="Script" uid="uid://btph6qc25jud0" path="res://scripts/Main.gd" id="1_5vw27"]
+[ext_resource type="PackedScene" uid="uid://dtlnagq7aeium" path="res://scenes/Piece.tscn" id="2_5vw27"]
+[ext_resource type="Texture2D" uid="uid://h0dxfq3ibuu" path="res://assets/tileYellow_04.png" id="3_kek77"]
+[ext_resource type="Texture2D" uid="uid://dthm2b148g1nf" path="res://assets/tileYellow_05.png" id="4_4c57u"]
+[ext_resource type="Texture2D" uid="uid://bm4wuu8fdy84r" path="res://assets/tileYellow_06.png" id="5_efxa6"]
+[ext_resource type="Texture2D" uid="uid://bs328vxptfbvu" path="res://assets/tileYellow_07.png" id="6_dg77c"]
+[ext_resource type="Texture2D" uid="uid://ds5squ2l1k61x" path="res://assets/tileYellow_08.png" id="7_ycdy4"]
+[ext_resource type="Texture2D" uid="uid://b50u3jtkbeocq" path="res://assets/tileYellow_01.png" id="8_w48qg"]
+
+[sub_resource type="GDScript" id="GDScript_kek77"]
+script/source = "extends Node2D
+
+@export var width: int = 8
+@export var height: int = 8
+@export var cell_size: int = 64
+@export var num_colors: int = 6
+
+@export var ball_scene: PackedScene
+@export var ball_textures: Array[Texture2D]  # drag your textures in Inspector
+
+var grid: Array = []  # 2D array: grid[x][y] = Ball or null
+
+func _ready() -> void:
+	_init_grid()
+	_spawn_initial_board()
+
+func _init_grid() -> void:
+	grid.clear()
+	for x in range(width):
+		grid.append([])
+		for y in range(height):
+			grid[x].append(null)
+
+func grid_to_world(p: Vector2i) -> Vector2:
+	# Top-left origin board
+	return Vector2(p.x * cell_size, p.y * cell_size)
+
+func _spawn_initial_board() -> void:
+	for x in range(width):
+		for y in range(height):
+			var color := randi() % num_colors
+			_create_ball(Vector2i(x, y), color)
+
+func _create_ball(pos: Vector2i, color: int) -> void:
+	var b: ball = ball_scene.instantiate()
+	add_child(b)
+	b.position = grid_to_world(pos)
+	b.setup(pos, color, ball_textures)
+	grid[pos.x][pos.y] = b
+	
+	
+"
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_5vw27")
+
+[node name="Board" type="Node2D" parent="."]
+position = Vector2(200, 100)
+script = SubResource("GDScript_kek77")
+ball_scene = ExtResource("2_5vw27")
+ball_textures = Array[Texture2D]([ExtResource("3_kek77"), ExtResource("4_4c57u"), ExtResource("5_efxa6"), ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+
+[node name="BallContainer" type="Node2D" parent="Board"]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ScoreLabel" type="Label" parent="UI/HUD"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="MovesLabel" type="Label" parent="UI/HUD"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="GoalLabel" type="Label" parent="UI/HUD"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="HintButton" type="Button" parent="UI/HUD"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="AILevelButton" type="Button" parent="UI/HUD"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="MessageLabel" type="Label" parent="UI/HUD"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
