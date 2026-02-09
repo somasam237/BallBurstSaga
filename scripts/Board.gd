@@ -4,6 +4,7 @@ class_name Board
 signal score_gained(points: int)
 signal moves_used(remaining: int)
 signal message(text: String)
+signal game_over(won: bool)
 
 enum State {
 	IDLE,
@@ -53,6 +54,10 @@ func new_game() -> void:
 	_fill_without_initial_matches()
 
 	state = State.IDLE
+
+func configure(moves: int, target: int) -> void:
+	start_moves = moves
+	target_score = target
 
 func _clear_all() -> void:
 	for c in pieces_layer.get_children():
@@ -253,7 +258,7 @@ func _resolve_loop() -> void:
 
 # ---------------- MATCH / CLEAR / GRAVITY / REFILL ----------------
 
-func _find_all_matches() -> Array[Piece]:
+func _find_all_matches() -> Array:
 	var matched := {}
 
 	# horizontal
@@ -292,7 +297,10 @@ func _find_all_matches() -> Array[Piece]:
 		if run2.size() >= 3:
 			for rp4 in run2: matched[rp4] = true
 
-	return matched.keys()
+	var out: Array[Piece] = []
+	for k in matched.keys():
+		out.append(k as Piece)
+	return out
 
 func _clear_matches(matches: Array[Piece]) -> void:
 	for p in matches:
@@ -333,9 +341,11 @@ func _check_end() -> void:
 	if score >= target_score:
 		state = State.GAME_OVER
 		emit_signal("message", "🎉 You win! Target reached.")
+		emit_signal("game_over", true)
 	elif moves_left <= 0:
 		state = State.GAME_OVER
 		emit_signal("message", "😵 Out of moves! Try again.")
+		emit_signal("game_over", false)
 
 # -------- Hint (still non-AI) --------
 func find_hint_swap() -> Dictionary:
