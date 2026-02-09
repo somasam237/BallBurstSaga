@@ -1,15 +1,21 @@
-[gd_scene load_steps=3 format=3 uid="uid://dtlnagq7aeium"]
+[gd_scene load_steps=4 format=3 uid="uid://dtlnagq7aeium"]
 
 [ext_resource type="Script" uid="uid://dukt053apdhki" path="res://scripts/Piece.gd" id="1_fnypl"]
+[ext_resource type="AudioStream" uid="uid://buthi8rvyoay5" path="res://assets/sounds/595844__kbrecordzz__cute-melody.mp3" id="2_8q0ws"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_x8fbi"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qtafc"]
 
 [node name="Piece" type="Node2D"]
 script = ExtResource("1_fnypl")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite" type="Sprite2D" parent="."]
 
 [node name="Area" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area"]
-shape = SubResource("CircleShape2D_x8fbi")
+shape = SubResource("RectangleShape2D_qtafc")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Area"]
+stream = ExtResource("2_8q0ws")
+volume_db = -37.359
+autoplay = true

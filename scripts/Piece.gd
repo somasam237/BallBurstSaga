@@ -25,13 +25,13 @@ func _update_visual() -> void:
 	var center := Vector2(size_px / 2.0, size_px / 2.0)
 	var r := size_px * 0.42
 
-	for y in size_px:
-		for x in size_px:
+	for y in range(size_px):
+		for x in range(size_px):
 			var p := Vector2(x + 0.5, y + 0.5)
 			var d := p.distance_to(center)
 			if d <= r:
 				# simple shading
-				var t := clamp((r - d) / r, 0.0, 1.0)
+				var t := clampf((r - d) / r, 0.0, 1.0)
 				var shaded := c.lerp(Color.WHITE, 0.15 * t)
 				img.set_pixel(x, y, shaded)
 
