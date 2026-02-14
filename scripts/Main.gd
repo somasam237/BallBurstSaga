@@ -51,13 +51,10 @@ func _on_message(t: String) -> void:
 	message_label.text = t
 
 func _on_hint_pressed() -> void:
-	var hint := board.find_hint_swap()
-	if hint.is_empty():
+	if not board.show_hint():
 		message_label.text = "No hints found."
 		return
-	var a: Piece = hint["a"]
-	var b: Piece = hint["b"]
-	message_label.text = "Hint: swap (" + str(a.grid_x) + "," + str(a.grid_y) + ") with (" + str(b.grid_x) + "," + str(b.grid_y) + ")"
+	message_label.text = "Hint shown."
 
 func _setup_ui() -> void:
 	score_label.position = Vector2(12, 10)
