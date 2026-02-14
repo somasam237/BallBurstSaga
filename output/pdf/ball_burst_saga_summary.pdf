@@ -1,0 +1,60 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Length 2163 >>
+stream
+BT /F2 18 Tf 54 744 Td (BallBurstSaga - App Summary) Tj ET
+BT /F2 12 Tf 54 718 Td (What it is) Tj ET
+BT /F1 11 Tf 54 702 Td (A 2D match-3 puzzle game built in Godot.) Tj ET
+BT /F1 11 Tf 54 688 Td (Players swap adjacent pieces to clear matches, score points, and reach a target before moves run out.) Tj ET
+BT /F2 12 Tf 54 668 Td (Who it is for) Tj ET
+BT /F1 11 Tf 54 652 Td (Casual puzzle players who enjoy match-3 style games.) Tj ET
+BT /F2 12 Tf 54 632 Td (What it does) Tj ET
+BT /F1 11 Tf 66 616 Td (- 8x8 grid of colored pieces; match 3+ to clear.) Tj ET
+BT /F1 11 Tf 66 602 Td (- Adjacent swap with selection feedback; swaps revert if no match.) Tj ET
+BT /F1 11 Tf 66 588 Td (- Scoring system with target score and move limit.) Tj ET
+BT /F1 11 Tf 66 574 Td (- Cascading clears with gravity and automatic refill.) Tj ET
+BT /F1 11 Tf 66 560 Td (- Hint button finds a valid swap.) Tj ET
+BT /F1 11 Tf 66 546 Td (- HUD shows score, moves, goal, and status messages.) Tj ET
+BT /F2 12 Tf 54 526 Td (How it works \(repo evidence\)) Tj ET
+BT /F1 11 Tf 66 510 Td (- Godot project with main scene set to `Scenes/Main.tscn` in `project.godot`.) Tj ET
+BT /F1 11 Tf 66 496 Td (- `scripts/Main.gd` wires HUD labels/buttons to Board signals and hint action.) Tj ET
+BT /F1 11 Tf 66 482 Td (- `scripts/Board.gd` runs the match-3 state machine, grid, swaps, matches, clears, gravity, refill, scoring.) Tj ET
+BT /F1 11 Tf 66 468 Td (- `Scenes/Board.tscn` provides a Board node and Pieces layer; `Scenes/Piece.tscn` + `scripts/Piece.gd` draw pieces.) Tj ET
+BT /F1 11 Tf 66 454 Td (- `Scenes/Ball.tscn` + `scripts/Ball.gd` and an embedded Board script in `Scenes/Main.tscn` set up textured balls.) Tj ET
+BT /F1 11 Tf 66 440 Td (- Data flow: mouse click -> Board selection/swap -> Board signals -> Main updates HUD.) Tj ET
+BT /F2 12 Tf 54 420 Td (How to run) Tj ET
+BT /F1 11 Tf 66 404 Td (- Not found in repo: explicit install/setup guide.) Tj ET
+BT /F1 11 Tf 66 390 Td (- Install Godot 4.5 \(project.godot config features show 4.5\).) Tj ET
+BT /F1 11 Tf 66 376 Td (- Open `project.godot` in Godot.) Tj ET
+BT /F1 11 Tf 66 362 Td (- Run the main scene \(`Scenes/Main.tscn`\).) Tj ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000321 00000 n 
+0000000396 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+2611
+%%EOF

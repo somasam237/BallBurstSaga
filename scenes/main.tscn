@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://dteopqsjohcok"]
+[gd_scene load_steps=3 format=3 uid="uid://dteopqsjohcok"]
 
+[ext_resource type="Script" uid="uid://btph6qc25jud0" path="res://scripts/Main.gd" id="1_50glp"]
 [ext_resource type="Script" uid="uid://dsy7etipvjpft" path="res://scripts/Board.gd" id="2_x0t5g"]
 
 [node name="Main" type="Node2D"]
+script = ExtResource("1_50glp")
 
 [node name="Board" type="Node2D" parent="."]
 position = Vector2(200, 100)
@@ -14,24 +16,29 @@ script = ExtResource("2_x0t5g")
 
 [node name="HUD" type="Control" parent="UI"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
 
 [node name="ScoreLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_right = 220.0
+offset_bottom = 20.0
 
 [node name="MovesLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_top = 24.0
+offset_right = 220.0
+offset_bottom = 44.0
 
 [node name="GoalLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_top = 48.0
+offset_right = 220.0
+offset_bottom = 68.0
 
 [node name="HintButton" type="Button" parent="UI/HUD"]
 layout_mode = 0
@@ -40,8 +47,9 @@ offset_bottom = 8.0
 
 [node name="MessageLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_top = 72.0
+offset_right = 260.0
+offset_bottom = 92.0
 
 [node name="RestartButton" type="Button" parent="UI/HUD"]
 layout_mode = 0
@@ -59,6 +67,7 @@ offset_right = 8.0
 offset_bottom = 8.0
 
 [node name="PauseUI" type="CanvasLayer" parent="."]
+layer = 2
 
 [node name="PausePanel" type="Panel" parent="PauseUI"]
 anchors_preset = 8
@@ -89,3 +98,45 @@ text = "Reprendre"
 [node name="QuitButton" type="Button" parent="PauseUI/PausePanel/PauseVBox"]
 layout_mode = 2
 text = "Quitter"
+
+[node name="EndUI" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="EndPanel" type="Panel" parent="EndUI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -100.0
+offset_right = 160.0
+offset_bottom = 100.0
+
+[node name="EndVBox" type="VBoxContainer" parent="EndUI/EndPanel"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+
+[node name="EndTitle" type="Label" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+text = "Fin de partie"
+horizontal_alignment = 1
+
+[node name="EndScore" type="Label" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+text = "Score: 0"
+horizontal_alignment = 1
+
+[node name="EndNextButton" type="Button" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+text = "Niveau suivant"
+
+[node name="EndRestartButton" type="Button" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+text = "Recommencer"
+
+[node name="EndMenuButton" type="Button" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+text = "Menu"

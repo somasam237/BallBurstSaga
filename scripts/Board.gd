@@ -144,7 +144,6 @@ func _handle_click(global_pos: Vector2) -> void:
 		selected = p
 		state = State.SELECTED
 		_pulse(p)
-		emit_signal("message", "Selected (%d,%d)".format([p.grid_x, p.grid_y]))
 		return
 
 	# state == SELECTED
@@ -166,7 +165,7 @@ func _handle_click(global_pos: Vector2) -> void:
 	else:
 		selected = p
 		_pulse(p)
-		emit_signal("message", "Selected (%d,%d)".format([p.grid_x, p.grid_y]))
+		# no selection message
 
 func _consume_move() -> void:
 	moves_left -= 1
