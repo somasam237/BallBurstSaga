@@ -2,9 +2,9 @@ extends Node
 
 # Simple hardcoded levels for MVP.
 var levels := [
-	{"moves": 20, "target": 3000},
-	{"moves": 22, "target": 4500},
-	{"moves": 25, "target": 6000},
+	{"moves": 20, "target": 8000},
+	{"moves": 22, "target": 11000},
+	{"moves": 25, "target": 14000},
 ]
 
 var current_level_index: int = 0
