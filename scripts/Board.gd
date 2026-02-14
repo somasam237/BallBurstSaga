@@ -38,9 +38,25 @@ var score: int
 var selected: Piece = null
 var swap_a: Piece = null
 var swap_b: Piece = null
+var hint_timer: Timer
+var hint_tween: Tween = null
 
 func _ready() -> void:
 	new_game()
+	_start_hint_timer()
+
+func _start_hint_timer() -> void:
+	hint_timer = Timer.new()
+	hint_timer.wait_time = 10.0
+	hint_timer.one_shot = false
+	hint_timer.autostart = true
+	add_child(hint_timer)
+	hint_timer.timeout.connect(_on_hint_timer_timeout)
+
+func _on_hint_timer_timeout() -> void:
+	if state != State.IDLE:
+		return
+	_show_hint_swap_animation()
 
 func new_game() -> void:
 	_clear_all()
@@ -364,6 +380,36 @@ func find_hint_swap() -> Dictionary:
 				if r and _swap_would_match(p, r):
 					return {"a": p, "b": r}
 	return {}
+
+func show_hint() -> bool:
+	var hint := find_hint_swap()
+	if hint.is_empty():
+		return false
+	var a: Piece = hint["a"]
+	var b: Piece = hint["b"]
+	if a == null or b == null:
+		return false
+	_show_hint_swap_animation(a, b)
+	return true
+
+func _show_hint_swap_animation(a: Piece = null, b: Piece = null) -> void:
+	if a == null or b == null:
+		var hint := find_hint_swap()
+		if hint.is_empty():
+			return
+		a = hint["a"]
+		b = hint["b"]
+	if a == null or b == null:
+		return
+	if hint_tween and hint_tween.is_running():
+		hint_tween.kill()
+	var pos_a := a.position
+	var pos_b := b.position
+	hint_tween = create_tween()
+	hint_tween.tween_property(a, "position", pos_b, 0.12)
+	hint_tween.parallel().tween_property(b, "position", pos_a, 0.12)
+	hint_tween.tween_property(a, "position", pos_a, 0.12)
+	hint_tween.parallel().tween_property(b, "position", pos_b, 0.12)
 
 func _swap_would_match(a: Piece, b: Piece) -> bool:
 	var ak := a.kind
