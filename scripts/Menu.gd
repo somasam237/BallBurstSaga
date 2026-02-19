@@ -28,11 +28,13 @@ func _animate_title() -> void:
 func _play() -> void:
 	click_sfx.play()
 	menu_music.stop()
+	GameState.load_progress()
 	await get_tree().create_timer(0.1).timeout
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 func _restart() -> void:
 	click_sfx.play()
 	menu_music.stop()
+	GameState.set_current_level(0)
 	await get_tree().create_timer(0.1).timeout
 	get_tree().change_scene_to_file("res://scenes/main.tscn")

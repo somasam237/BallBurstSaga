@@ -32,6 +32,7 @@ extends Node2D
 var total_score: int = 0
 
 func _ready() -> void:
+	GameState.load_progress()
 	_fit_background()
 	board.scale = Vector2(1.2, 1.2)
 	_center_board()

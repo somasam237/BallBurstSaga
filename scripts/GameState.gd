@@ -23,6 +23,9 @@ func _load_progress() -> void:
 	current_level_index = int(cfg.get_value("progress", "current_level_index", current_level_index))
 	current_level_index = clamp(current_level_index, 0, levels.size() - 1)
 
+func load_progress() -> void:
+	_load_progress()
+
 func _save_progress() -> void:
 	var cfg := ConfigFile.new()
 	cfg.set_value("progress", "current_level_index", current_level_index)
