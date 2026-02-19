@@ -9,6 +9,8 @@ var levels := [
 
 var current_level_index: int = 0
 
+
+
 func level_count() -> int:
 	return levels.size()
 
