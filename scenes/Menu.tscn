@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://csxmxcp3pid6" path="res://scripts/Menu.gd" id="1_rv0k4"]
 [ext_resource type="Texture2D" uid="uid://codd5nqip8j4o" path="res://assets/DesignAsset/freecandybuttons/png/Blank/Text (1).png" id="2_5u0mn"]
+[ext_resource type="Texture2D" uid="uid://cql7fdb3q1n6m" path="res://assets/DesignAsset/Candy World/Backgrounds/Background.png" id="2_wfhf6"]
 [ext_resource type="Texture2D" uid="uid://bfseoi86g4wro" path="res://assets/DesignAsset/freecandybuttons/png/Blank/Text (2).png" id="3_4o0kq"]
 [ext_resource type="Texture2D" uid="uid://bss3a4hbgaik" path="res://assets/DesignAsset/freecandybuttons/png/Blank/Text (3).png" id="4_v2r3f"]
-[ext_resource type="Texture2D" uid="uid://moybqxq47c1d" path="res://assets/DesignAsset/Candy Milk Background_1.png" id="5_y1b8n"]
 [ext_resource type="AudioStream" uid="uid://fp4yu8mxavjv" path="res://assets/sounds/GameSound/MenuSound/cheerful-flooding-birds-singing-overhead.mp3" id="6_menu_aud"]
 [ext_resource type="AudioStream" uid="uid://03oqh2ej51vq" path="res://assets/sounds/GameSound/BottonClickSound/mixkit-unlock-game-notification-253.wav" id="7_click_aud"]
 
@@ -25,7 +25,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("5_y1b8n")
+texture = ExtResource("2_wfhf6")
 expand_mode = 1
 
 [node name="MenuMusic" type="AudioStreamPlayer" parent="."]
