@@ -25,7 +25,7 @@ enum State {
 @export var start_moves: int = 25
 @export var target_score: int = 5000
 
-@export var piece_scene: PackedScene = preload("res://Scenes/Piece.tscn")
+@export var piece_scene: PackedScene = preload("res://scenes/Piece.tscn")
 
 @onready var pieces_layer: Node2D = $Pieces
 
@@ -269,7 +269,7 @@ func _resolve_loop() -> void:
 		var points := cleared * 100
 		score += points
 		emit_signal("score_gained", points)
-		emit_signal("message", "Cleared %d balls (+%d)".format([cleared, points]))
+		emit_signal("message", "")
 		await _clear_matches(matches)
 
 		state = State.GRAVITY

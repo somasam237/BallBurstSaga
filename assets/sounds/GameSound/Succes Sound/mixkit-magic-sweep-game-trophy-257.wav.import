@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://fhecxmayhj2h"
+path="res://.godot/imported/mixkit-magic-sweep-game-trophy-257.wav-385519986fa7a245366977225879c248.sample"
+
+[deps]
+
+source_file="res://assets/sounds/GameSound/Succes Sound/mixkit-magic-sweep-game-trophy-257.wav"
+dest_files=["res://.godot/imported/mixkit-magic-sweep-game-trophy-257.wav-385519986fa7a245366977225879c248.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

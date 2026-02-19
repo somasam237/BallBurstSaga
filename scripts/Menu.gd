@@ -22,8 +22,15 @@ func _process(delta: float) -> void:
 	bg.position.x = cos(Time.get_ticks_msec() * 0.0007) * 8.0
 
 func _play() -> void:
-	get_tree().change_scene_to_file("res://Scenes/Main.tscn")
+	click_sfx.play()
+	menu_music.stop()
+	GameState.load_progress()
+	await get_tree().create_timer(0.1).timeout
+	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 func _restart() -> void:
+	click_sfx.play()
+	menu_music.stop()
 	GameState.set_current_level(0)
-	get_tree().change_scene_to_file("res://Scenes/Main.tscn")
+	await get_tree().create_timer(0.1).timeout
+	get_tree().change_scene_to_file("res://scenes/main.tscn")
