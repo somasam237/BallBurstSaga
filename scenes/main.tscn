@@ -1,10 +1,45 @@
-[gd_scene load_steps=3 format=3 uid="uid://dteopqsjohcok"]
+[gd_scene load_steps=23 format=3 uid="uid://dteopqsjohcok"]
 
 [ext_resource type="Script" uid="uid://btph6qc25jud0" path="res://scripts/Main.gd" id="1_50glp"]
 [ext_resource type="Script" uid="uid://dsy7etipvjpft" path="res://scripts/Board.gd" id="2_x0t5g"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Blank/Text (1).png" id="3_score_bg"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Help (1).png" id="4_help_n"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Help (2).png" id="5_help_p"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Help (3).png" id="6_help_h"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (1).png" id="7_refresh_n"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (2).png" id="8_refresh_p"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (3).png" id="9_refresh_h"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Home (1).png" id="10_home_n"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Home (2).png" id="11_home_p"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Home (3).png" id="12_home_h"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Pause (1).png" id="13_pause_n"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Pause (2).png" id="14_pause_p"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Pause (3).png" id="15_pause_h"]
+[ext_resource type="AudioStream" path="res://assets/sounds/595844__kbrecordzz__cute-melody.mp3" id="16_gameplay_music"]
+[ext_resource type="AudioStream" path="res://assets/sounds/156859__multimax2121__button-1.wav" id="17_match_sfx"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/Candy World/Preview.png" id="18_bg"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/GameIcon/stars-stack.png" id="19_win_icon"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/GameIcon/broken-heart.png" id="20_lose_icon"]
+[ext_resource type="AudioStream" path="res://assets/sounds/GameSound/Succes Sound/mixkit-game-level-completed-2059.wav" id="21_win_sfx"]
+[ext_resource type="AudioStream" path="res://assets/sounds/GameSound/LosingSound/mixkit-player-losing-or-failing-2042.wav" id="22_lose_sfx"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_board_bg"]
+bg_color = Color(1, 1, 1, 0.6)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_50glp")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("18_bg")
+z_index = -10
+
+[node name="BoardBG" type="Panel" parent="."]
+theme_override_styles/panel = SubResource("StyleBoxFlat_board_bg")
+z_index = -1
 
 [node name="Board" type="Node2D" parent="."]
 position = Vector2(200, 100)
@@ -13,6 +48,22 @@ script = ExtResource("2_x0t5g")
 [node name="Pieces" type="Node2D" parent="Board"]
 
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="GameplayMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("16_gameplay_music")
+volume_db = -6.0
+
+[node name="MatchSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("17_match_sfx")
+volume_db = 3.0
+
+[node name="WinSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("21_win_sfx")
+volume_db = -2.0
+
+[node name="LoseSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("22_lose_sfx")
+volume_db = -2.0
 
 [node name="HUD" type="Control" parent="UI"]
 layout_mode = 3
@@ -23,48 +74,158 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 
+[node name="ScoreBG" type="TextureRect" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 280.0
+offset_bottom = 80.0
+mouse_filter = 2
+texture = ExtResource("3_score_bg")
+expand_mode = 1
+stretch_mode = 0
+
 [node name="ScoreLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 220.0
-offset_bottom = 20.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 280.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MovesBG" type="TextureRect" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 90.0
+offset_right = 280.0
+offset_bottom = 150.0
+mouse_filter = 2
+texture = ExtResource("3_score_bg")
+expand_mode = 1
+stretch_mode = 0
 
 [node name="MovesLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_top = 24.0
-offset_right = 220.0
-offset_bottom = 44.0
+offset_left = 20.0
+offset_top = 90.0
+offset_right = 280.0
+offset_bottom = 150.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GoalBG" type="TextureRect" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 160.0
+offset_right = 280.0
+offset_bottom = 220.0
+mouse_filter = 2
+texture = ExtResource("3_score_bg")
+expand_mode = 1
+stretch_mode = 0
 
 [node name="GoalLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_top = 48.0
-offset_right = 220.0
-offset_bottom = 68.0
+offset_left = 20.0
+offset_top = 160.0
+offset_right = 280.0
+offset_bottom = 220.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="HintButton" type="Button" parent="UI/HUD"]
+[node name="HintButton" type="TextureButton" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -640.0
+offset_top = 16.0
+offset_right = -494.0
+offset_bottom = 163.0
+scale = Vector2(0.55, 0.55)
+texture_normal = ExtResource("4_help_n")
+texture_pressed = ExtResource("5_help_p")
+texture_hover = ExtResource("6_help_h")
 
 [node name="MessageLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_top = 72.0
-offset_right = 260.0
-offset_bottom = 92.0
+offset_left = 20.0
+offset_top = 230.0
+offset_right = 360.0
+offset_bottom = 270.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
 
-[node name="RestartButton" type="Button" parent="UI/HUD"]
+[node name="LevelBG" type="TextureRect" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 20.0
+offset_right = 130.0
+offset_bottom = 80.0
+mouse_filter = 2
+texture = ExtResource("3_score_bg")
+expand_mode = 1
+stretch_mode = 0
 
-[node name="MenuButton" type="Button" parent="UI/HUD"]
+[node name="LevelLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 20.0
+offset_right = 130.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(0.95, 0.2, 0.2, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="PauseButton" type="Button" parent="UI/HUD"]
+[node name="RestartButton" type="TextureButton" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -482.0
+offset_top = 16.0
+offset_right = -336.0
+offset_bottom = 163.0
+scale = Vector2(0.55, 0.55)
+texture_normal = ExtResource("7_refresh_n")
+texture_pressed = ExtResource("8_refresh_p")
+texture_hover = ExtResource("9_refresh_h")
+
+[node name="MenuButton" type="TextureButton" parent="UI/HUD"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -324.0
+offset_top = 16.0
+offset_right = -178.0
+offset_bottom = 163.0
+scale = Vector2(0.55, 0.55)
+texture_normal = ExtResource("10_home_n")
+texture_pressed = ExtResource("11_home_p")
+texture_hover = ExtResource("12_home_h")
+
+[node name="PauseButton" type="TextureButton" parent="UI/HUD"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -166.0
+offset_top = 16.0
+offset_right = -20.0
+offset_bottom = 163.0
+scale = Vector2(0.55, 0.55)
+texture_normal = ExtResource("13_pause_n")
+texture_pressed = ExtResource("14_pause_p")
+texture_hover = ExtResource("15_pause_h")
 
 [node name="PauseUI" type="CanvasLayer" parent="."]
 layer = 2
@@ -118,6 +279,14 @@ layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 alignment = 1
+
+[node name="EndIcon" type="TextureRect" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(140, 140)
+mouse_filter = 2
+texture = ExtResource("19_win_icon")
+expand_mode = 1
+stretch_mode = 4
 
 [node name="EndTitle" type="Label" parent="EndUI/EndPanel/EndVBox"]
 layout_mode = 2
