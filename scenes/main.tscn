@@ -254,11 +254,11 @@ horizontal_alignment = 1
 
 [node name="ResumeButton" type="Button" parent="PauseUI/PausePanel/PauseVBox"]
 layout_mode = 2
-text = "Reprendre"
+text = "Resume"
 
 [node name="QuitButton" type="Button" parent="PauseUI/PausePanel/PauseVBox"]
 layout_mode = 2
-text = "Quitter"
+text = "Quit"
 
 [node name="EndUI" type="CanvasLayer" parent="."]
 layer = 3

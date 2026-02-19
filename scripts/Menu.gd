@@ -1,29 +1,25 @@
 extends Control
 
-@onready var play_button: BaseButton = $VBox/PlayButton
-@onready var restart_button: BaseButton = $VBox/RestartButton
-@onready var title_label: Label = $VBox/Title
-@onready var menu_music: AudioStreamPlayer = $MenuMusic
-@onready var click_sfx: AudioStreamPlayer = $ClickSfx
-
+@onready var play_button: Button = $VBox/PlayButton
+@onready var restart_button: Button = $VBox/RestartButton
+var bg: TextureRect
 func _ready() -> void:
+	bg = $TextureRect
 	play_button.pressed.connect(_play)
 	restart_button.pressed.connect(_restart)
-	if menu_music.stream is AudioStreamMP3:
-		menu_music.stream.loop = true
-	elif menu_music.stream is AudioStreamOggVorbis:
-		menu_music.stream.loop = true
-	menu_music.play()
-	_animate_title()
+	
+func _on_button_hover(button: Button) -> void:
+	var tween = create_tween()
+	tween.tween_property(button, "scale", Vector2(1.1, 1.1), 0.1)
 
-func _animate_title() -> void:
-	title_label.scale = Vector2(1.2, 1.2)
-	var tween := create_tween()
-	tween.tween_property(title_label, "scale", Vector2(1.7, 1.7), 0.6) \
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(title_label, "scale", Vector2(1.5, 1.5), 0.4) \
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.set_loops()
+func _on_button_unhover(button: Button) -> void:
+	var tween = create_tween()
+	tween.tween_property(button, "scale", Vector2(1.0, 1.0), 0.1)
+
+func _process(delta: float) -> void:
+	# Fait osciller légèrement le fond
+	bg.position.y = sin(Time.get_ticks_msec() * 0.001) * 10.0
+	bg.position.x = cos(Time.get_ticks_msec() * 0.0007) * 8.0
 
 func _play() -> void:
 	click_sfx.play()
