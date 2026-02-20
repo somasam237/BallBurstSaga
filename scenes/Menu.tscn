@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dihjdc2mkx2jk"]
+[gd_scene load_steps=12 format=3 uid="uid://dihjdc2mkx2jk"]
 
 [ext_resource type="Script" uid="uid://csxmxcp3pid6" path="res://scripts/Menu.gd" id="1_rv0k4"]
 [ext_resource type="Texture2D" uid="uid://codd5nqip8j4o" path="res://assets/DesignAsset/freecandybuttons/png/Blank/Text (1).png" id="2_5u0mn"]
@@ -10,6 +10,7 @@
 [ext_resource type="AudioStream" uid="uid://fp4yu8mxavjv" path="res://assets/sounds/GameSound/MenuSound/cheerful-flooding-birds-singing-overhead.mp3" id="6_menu_aud"]
 [ext_resource type="AudioStream" uid="uid://03oqh2ej51vq" path="res://assets/sounds/GameSound/BottonClickSound/mixkit-unlock-game-notification-253.wav" id="7_click_aud"]
 [ext_resource type="Texture2D" uid="uid://dp4atrgj3xln8" path="res://assets/Ball_Burst__4_-removebg-preview.png" id="7_pp5m5"]
+[ext_resource type="Texture2D" uid="uid://b1oo2xis6opok" path="res://assets/Ball_Burst__5_-removebg-preview.png" id="8_pp5m5"]
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -66,6 +67,33 @@ grow_vertical = 2
 theme_override_constants/separation = 48
 alignment = 1
 
+[node name="TitleRow" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="BallBurstColumn" type="VBoxContainer" parent="VBox/TitleRow"]
+layout_mode = 2
+
+[node name="Ball" type="TextureRect" parent="VBox/TitleRow/BallBurstColumn"]
+custom_minimum_size = Vector2(300, 180)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("6_4umqm")
+expand_mode = 1
+
+[node name="Burst" type="TextureRect" parent="VBox/TitleRow/BallBurstColumn"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("7_pp5m5")
+expand_mode = 1
+
+[node name="Saga" type="TextureRect" parent="VBox/TitleRow"]
+custom_minimum_size = Vector2(300, 150)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("8_pp5m5")
+
 [node name="Title" type="Label" parent="VBox"]
 visible = false
 layout_mode = 2
@@ -74,21 +102,8 @@ theme_override_font_sizes/font_size = 70
 text = "Ball Burst Saga"
 horizontal_alignment = 1
 
-[node name="Background" type="TextureRect" parent="VBox"]
-custom_minimum_size = Vector2(200, 400)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("6_4umqm")
-expand_mode = 1
-
-[node name="Background2" type="TextureRect" parent="VBox"]
-custom_minimum_size = Vector2(200, 400)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("7_pp5m5")
-expand_mode = 1
-
 [node name="TitleSpacer" type="Control" parent="VBox"]
+visible = false
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 
