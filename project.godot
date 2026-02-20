@@ -21,8 +21,8 @@ GameState="*res://scripts/GameState.gd"
 
 [display]
 
-window/size/viewport_width=2400
-window/size/viewport_height=1400
+window/size/viewport_width=1500
+window/size/viewport_height=950
 
 [dotnet]
 
