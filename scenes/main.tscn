@@ -2,26 +2,25 @@
 
 [ext_resource type="Script" uid="uid://btph6qc25jud0" path="res://scripts/Main.gd" id="1_50glp"]
 [ext_resource type="Script" uid="uid://dsy7etipvjpft" path="res://scripts/Board.gd" id="2_x0t5g"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Blank/Text (1).png" id="3_score_bg"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Help (1).png" id="4_help_n"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Help (2).png" id="5_help_p"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Help (3).png" id="6_help_h"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (1).png" id="7_refresh_n"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (2).png" id="8_refresh_p"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (3).png" id="9_refresh_h"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Home (1).png" id="10_home_n"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Home (2).png" id="11_home_p"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Home (3).png" id="12_home_h"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Pause (1).png" id="13_pause_n"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Pause (2).png" id="14_pause_p"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Pause (3).png" id="15_pause_h"]
-[ext_resource type="AudioStream" path="res://assets/sounds/595844__kbrecordzz__cute-melody.mp3" id="16_gameplay_music"]
-[ext_resource type="AudioStream" path="res://assets/sounds/156859__multimax2121__button-1.wav" id="17_match_sfx"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/Candy World/Preview.png" id="18_bg"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/GameIcon/stars-stack.png" id="19_win_icon"]
-[ext_resource type="Texture2D" path="res://assets/DesignAsset/GameIcon/broken-heart.png" id="20_lose_icon"]
-[ext_resource type="AudioStream" path="res://assets/sounds/GameSound/Succes Sound/mixkit-game-level-completed-2059.wav" id="21_win_sfx"]
-[ext_resource type="AudioStream" path="res://assets/sounds/GameSound/LosingSound/mixkit-player-losing-or-failing-2042.wav" id="22_lose_sfx"]
+[ext_resource type="Texture2D" uid="uid://codd5nqip8j4o" path="res://assets/DesignAsset/freecandybuttons/png/Blank/Text (1).png" id="3_score_bg"]
+[ext_resource type="Texture2D" uid="uid://dearlbsyawf6r" path="res://assets/DesignAsset/freecandybuttons/png/Help (1).png" id="4_help_n"]
+[ext_resource type="Texture2D" uid="uid://r0g2rxoc4jlj" path="res://assets/DesignAsset/freecandybuttons/png/Help (2).png" id="5_help_p"]
+[ext_resource type="Texture2D" uid="uid://cilmmskpnbvso" path="res://assets/DesignAsset/freecandybuttons/png/Help (3).png" id="6_help_h"]
+[ext_resource type="Texture2D" uid="uid://dbjq5iqtj22" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (1).png" id="7_refresh_n"]
+[ext_resource type="Texture2D" uid="uid://orjw58ge3es0" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (2).png" id="8_refresh_p"]
+[ext_resource type="Texture2D" uid="uid://camcrxwrguc1a" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (3).png" id="9_refresh_h"]
+[ext_resource type="Texture2D" uid="uid://c6rb8cf0hibhu" path="res://assets/DesignAsset/freecandybuttons/png/Home (1).png" id="10_home_n"]
+[ext_resource type="Texture2D" uid="uid://3yr4v0ummp4x" path="res://assets/DesignAsset/freecandybuttons/png/Home (2).png" id="11_home_p"]
+[ext_resource type="Texture2D" uid="uid://btfyuy7ioywnk" path="res://assets/DesignAsset/freecandybuttons/png/Home (3).png" id="12_home_h"]
+[ext_resource type="Texture2D" uid="uid://dr6rkw2cpkv52" path="res://assets/DesignAsset/freecandybuttons/png/Pause (1).png" id="13_pause_n"]
+[ext_resource type="Texture2D" uid="uid://bsxrvksgu4ta5" path="res://assets/DesignAsset/freecandybuttons/png/Pause (2).png" id="14_pause_p"]
+[ext_resource type="Texture2D" uid="uid://c4uo6tg6b8jyo" path="res://assets/DesignAsset/freecandybuttons/png/Pause (3).png" id="15_pause_h"]
+[ext_resource type="AudioStream" uid="uid://buthi8rvyoay5" path="res://assets/sounds/595844__kbrecordzz__cute-melody.mp3" id="16_gameplay_music"]
+[ext_resource type="AudioStream" uid="uid://dastuox2lm634" path="res://assets/sounds/156859__multimax2121__button-1.wav" id="17_match_sfx"]
+[ext_resource type="Texture2D" uid="uid://don6fxyooqy37" path="res://assets/DesignAsset/Candy World/Preview.png" id="18_bg"]
+[ext_resource type="Texture2D" uid="uid://dxbdemfotyekg" path="res://assets/DesignAsset/GameIcon/stars-stack.png" id="19_win_icon"]
+[ext_resource type="AudioStream" uid="uid://cjrj01p3nkwg3" path="res://assets/sounds/GameSound/Succes Sound/mixkit-game-level-completed-2059.wav" id="21_win_sfx"]
+[ext_resource type="AudioStream" uid="uid://bkngy7tvhx3ob" path="res://assets/sounds/GameSound/LosingSound/mixkit-player-losing-or-failing-2042.wav" id="22_lose_sfx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_board_bg"]
 bg_color = Color(1, 1, 1, 0.6)
@@ -34,12 +33,12 @@ corner_radius_bottom_left = 16
 script = ExtResource("1_50glp")
 
 [node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("18_bg")
 z_index = -10
+texture = ExtResource("18_bg")
 
 [node name="BoardBG" type="Panel" parent="."]
-theme_override_styles/panel = SubResource("StyleBoxFlat_board_bg")
 z_index = -1
+theme_override_styles/panel = SubResource("StyleBoxFlat_board_bg")
 
 [node name="Board" type="Node2D" parent="."]
 position = Vector2(200, 100)
@@ -48,22 +47,6 @@ script = ExtResource("2_x0t5g")
 [node name="Pieces" type="Node2D" parent="Board"]
 
 [node name="UI" type="CanvasLayer" parent="."]
-
-[node name="GameplayMusic" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("16_gameplay_music")
-volume_db = -6.0
-
-[node name="MatchSfx" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("17_match_sfx")
-volume_db = 3.0
-
-[node name="WinSfx" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("21_win_sfx")
-volume_db = -2.0
-
-[node name="LoseSfx" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("22_lose_sfx")
-volume_db = -2.0
 
 [node name="HUD" type="Control" parent="UI"]
 layout_mode = 3
@@ -83,7 +66,6 @@ offset_bottom = 80.0
 mouse_filter = 2
 texture = ExtResource("3_score_bg")
 expand_mode = 1
-stretch_mode = 0
 
 [node name="ScoreLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
@@ -105,7 +87,6 @@ offset_bottom = 150.0
 mouse_filter = 2
 texture = ExtResource("3_score_bg")
 expand_mode = 1
-stretch_mode = 0
 
 [node name="MovesLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
@@ -127,7 +108,6 @@ offset_bottom = 220.0
 mouse_filter = 2
 texture = ExtResource("3_score_bg")
 expand_mode = 1
-stretch_mode = 0
 
 [node name="GoalLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
@@ -173,7 +153,6 @@ offset_bottom = 80.0
 mouse_filter = 2
 texture = ExtResource("3_score_bg")
 expand_mode = 1
-stretch_mode = 0
 
 [node name="LevelLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
@@ -227,6 +206,22 @@ texture_normal = ExtResource("13_pause_n")
 texture_pressed = ExtResource("14_pause_p")
 texture_hover = ExtResource("15_pause_h")
 
+[node name="GameplayMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("16_gameplay_music")
+volume_db = -6.0
+
+[node name="MatchSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("17_match_sfx")
+volume_db = 3.0
+
+[node name="WinSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("21_win_sfx")
+volume_db = -2.0
+
+[node name="LoseSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("22_lose_sfx")
+volume_db = -2.0
+
 [node name="PauseUI" type="CanvasLayer" parent="."]
 layer = 2
 
@@ -254,11 +249,11 @@ horizontal_alignment = 1
 
 [node name="ResumeButton" type="Button" parent="PauseUI/PausePanel/PauseVBox"]
 layout_mode = 2
-text = "Reprendre"
+text = "Resume"
 
 [node name="QuitButton" type="Button" parent="PauseUI/PausePanel/PauseVBox"]
 layout_mode = 2
-text = "Quitter"
+text = "Quit"
 
 [node name="EndUI" type="CanvasLayer" parent="."]
 layer = 3
@@ -281,8 +276,8 @@ anchor_bottom = 1.0
 alignment = 1
 
 [node name="EndIcon" type="TextureRect" parent="EndUI/EndPanel/EndVBox"]
-layout_mode = 2
 custom_minimum_size = Vector2(140, 140)
+layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("19_win_icon")
 expand_mode = 1

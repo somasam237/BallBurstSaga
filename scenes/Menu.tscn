@@ -21,7 +21,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_rv0k4")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -58,13 +58,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -220.0
-offset_right = 220.0
-offset_bottom = 220.0
+offset_left = -140.0
+offset_top = -120.0
+offset_right = 140.0
+offset_bottom = 120.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 48
 alignment = 1
 
 [node name="TitleRow" type="HBoxContainer" parent="VBox"]
@@ -97,8 +96,6 @@ texture = ExtResource("8_pp5m5")
 [node name="Title" type="Label" parent="VBox"]
 visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.541, 0.749, 0.122, 1)
-theme_override_font_sizes/font_size = 70
 text = "Ball Burst Saga"
 horizontal_alignment = 1
 
@@ -106,43 +103,11 @@ horizontal_alignment = 1
 visible = false
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
-
-[node name="PlayButton" type="TextureButton" parent="VBox"]
-layout_mode = 2
-size_flags_horizontal = 4
-texture_normal = ExtResource("2_5u0mn")
-texture_pressed = ExtResource("3_4o0kq")
-texture_hover = ExtResource("4_v2r3f")
-
-[node name="PlayLabel" type="Label" parent="VBox/PlayButton"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 28
 text = "Play"
-horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="RestartButton" type="TextureButton" parent="VBox"]
+[node name="RestartButton" type="Button" parent="VBox"]
+custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
-size_flags_horizontal = 4
-texture_normal = ExtResource("2_5u0mn")
-texture_pressed = ExtResource("3_4o0kq")
-texture_hover = ExtResource("4_v2r3f")
-
-[node name="RestartLabel" type="Label" parent="VBox/RestartButton"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 28
 text = "Restart"
-horizontal_alignment = 1
-vertical_alignment = 1

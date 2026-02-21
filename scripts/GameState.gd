@@ -31,6 +31,8 @@ func _save_progress() -> void:
 	cfg.set_value("progress", "current_level_index", current_level_index)
 	cfg.save(SAVE_PATH)
 
+
+
 func level_count() -> int:
 	return levels.size()
 
