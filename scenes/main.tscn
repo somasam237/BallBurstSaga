@@ -1,103 +1,311 @@
-[gd_scene load_steps=10 format=3 uid="uid://dteopqsjohcok"]
+[gd_scene load_steps=23 format=3 uid="uid://dteopqsjohcok"]
 
-[ext_resource type="Script" uid="uid://btph6qc25jud0" path="res://scripts/Main.gd" id="1_5vw27"]
-[ext_resource type="PackedScene" uid="uid://dtlnagq7aeium" path="res://Piece.tscn" id="2_5vw27"]
-[ext_resource type="Texture2D" uid="uid://h0dxfq3ibuu" path="res://assets/tileYellow_04.png" id="3_kek77"]
-[ext_resource type="Texture2D" uid="uid://dthm2b148g1nf" path="res://assets/tileYellow_05.png" id="4_4c57u"]
-[ext_resource type="Texture2D" uid="uid://bm4wuu8fdy84r" path="res://assets/tileYellow_06.png" id="5_efxa6"]
-[ext_resource type="Texture2D" uid="uid://bs328vxptfbvu" path="res://assets/tileYellow_07.png" id="6_dg77c"]
-[ext_resource type="Texture2D" uid="uid://ds5squ2l1k61x" path="res://assets/tileYellow_08.png" id="7_ycdy4"]
-[ext_resource type="Texture2D" uid="uid://b50u3jtkbeocq" path="res://assets/tileYellow_01.png" id="8_w48qg"]
+[ext_resource type="Script" uid="uid://btph6qc25jud0" path="res://scripts/Main.gd" id="1_50glp"]
+[ext_resource type="Script" uid="uid://dsy7etipvjpft" path="res://scripts/Board.gd" id="2_x0t5g"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Blank/Text (1).png" id="3_score_bg"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Help (1).png" id="4_help_n"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Help (2).png" id="5_help_p"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Help (3).png" id="6_help_h"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (1).png" id="7_refresh_n"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (2).png" id="8_refresh_p"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Refresh (3).png" id="9_refresh_h"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Home (1).png" id="10_home_n"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Home (2).png" id="11_home_p"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Home (3).png" id="12_home_h"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Pause (1).png" id="13_pause_n"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Pause (2).png" id="14_pause_p"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Pause (3).png" id="15_pause_h"]
+[ext_resource type="AudioStream" path="res://assets/sounds/595844__kbrecordzz__cute-melody.mp3" id="16_gameplay_music"]
+[ext_resource type="AudioStream" path="res://assets/sounds/156859__multimax2121__button-1.wav" id="17_match_sfx"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/Candy World/Preview.png" id="18_bg"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/GameIcon/stars-stack.png" id="19_win_icon"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/GameIcon/broken-heart.png" id="20_lose_icon"]
+[ext_resource type="AudioStream" path="res://assets/sounds/GameSound/Succes Sound/mixkit-game-level-completed-2059.wav" id="21_win_sfx"]
+[ext_resource type="AudioStream" path="res://assets/sounds/GameSound/LosingSound/mixkit-player-losing-or-failing-2042.wav" id="22_lose_sfx"]
 
-[sub_resource type="GDScript" id="GDScript_kek77"]
-script/source = "extends Node2D
-
-@export var width: int = 8
-@export var height: int = 8
-@export var cell_size: int = 64
-@export var num_colors: int = 6
-
-@export var ball_scene: PackedScene
-@export var ball_textures: Array[Texture2D]  # drag your textures in Inspector
-
-var grid: Array = []  # 2D array: grid[x][y] = Ball or null
-
-func _ready() -> void:
-	_init_grid()
-	_spawn_initial_board()
-
-func _init_grid() -> void:
-	grid.clear()
-	for x in range(width):
-		grid.append([])
-		for y in range(height):
-			grid[x].append(null)
-
-func grid_to_world(p: Vector2i) -> Vector2:
-	# Top-left origin board
-	return Vector2(p.x * cell_size, p.y * cell_size)
-
-func _spawn_initial_board() -> void:
-	for x in range(width):
-		for y in range(height):
-			var color := randi() % num_colors
-			_create_ball(Vector2i(x, y), color)
-
-func _create_ball(pos: Vector2i, color: int) -> void:
-	var b: ball = ball_scene.instantiate()
-	add_child(b)
-	b.position = grid_to_world(pos)
-	b.setup(pos, color, ball_textures)
-	grid[pos.x][pos.y] = b
-	
-	
-"
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_board_bg"]
+bg_color = Color(1, 1, 1, 0.6)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 
 [node name="Main" type="Node2D"]
-script = ExtResource("1_5vw27")
+script = ExtResource("1_50glp")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("18_bg")
+z_index = -10
+
+[node name="BoardBG" type="Panel" parent="."]
+theme_override_styles/panel = SubResource("StyleBoxFlat_board_bg")
+z_index = -1
 
 [node name="Board" type="Node2D" parent="."]
 position = Vector2(200, 100)
-script = SubResource("GDScript_kek77")
-ball_scene = ExtResource("2_5vw27")
-ball_textures = Array[Texture2D]([ExtResource("3_kek77"), ExtResource("4_4c57u"), ExtResource("5_efxa6"), ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+script = ExtResource("2_x0t5g")
 
-[node name="BallContainer" type="Node2D" parent="Board"]
+[node name="Pieces" type="Node2D" parent="Board"]
 
 [node name="UI" type="CanvasLayer" parent="."]
 
+[node name="GameplayMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("16_gameplay_music")
+volume_db = -6.0
+
+[node name="MatchSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("17_match_sfx")
+volume_db = 3.0
+
+[node name="WinSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("21_win_sfx")
+volume_db = -2.0
+
+[node name="LoseSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("22_lose_sfx")
+volume_db = -2.0
+
 [node name="HUD" type="Control" parent="UI"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="ScoreBG" type="TextureRect" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 280.0
+offset_bottom = 80.0
+mouse_filter = 2
+texture = ExtResource("3_score_bg")
+expand_mode = 1
+stretch_mode = 0
 
 [node name="ScoreLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 280.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MovesBG" type="TextureRect" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 90.0
+offset_right = 280.0
+offset_bottom = 150.0
+mouse_filter = 2
+texture = ExtResource("3_score_bg")
+expand_mode = 1
+stretch_mode = 0
 
 [node name="MovesLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 20.0
+offset_top = 90.0
+offset_right = 280.0
+offset_bottom = 150.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GoalBG" type="TextureRect" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 160.0
+offset_right = 280.0
+offset_bottom = 220.0
+mouse_filter = 2
+texture = ExtResource("3_score_bg")
+expand_mode = 1
+stretch_mode = 0
 
 [node name="GoalLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 20.0
+offset_top = 160.0
+offset_right = 280.0
+offset_bottom = 220.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="HintButton" type="Button" parent="UI/HUD"]
+[node name="HintButton" type="TextureButton" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
-
-[node name="AILevelButton" type="Button" parent="UI/HUD"]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -640.0
+offset_top = 16.0
+offset_right = -494.0
+offset_bottom = 163.0
+scale = Vector2(0.55, 0.55)
+texture_normal = ExtResource("4_help_n")
+texture_pressed = ExtResource("5_help_p")
+texture_hover = ExtResource("6_help_h")
 
 [node name="MessageLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 20.0
+offset_top = 230.0
+offset_right = 360.0
+offset_bottom = 270.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+
+[node name="LevelBG" type="TextureRect" parent="UI/HUD"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 20.0
+offset_right = 130.0
+offset_bottom = 80.0
+mouse_filter = 2
+texture = ExtResource("3_score_bg")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="LevelLabel" type="Label" parent="UI/HUD"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 20.0
+offset_right = 130.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(0.95, 0.2, 0.2, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestartButton" type="TextureButton" parent="UI/HUD"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -482.0
+offset_top = 16.0
+offset_right = -336.0
+offset_bottom = 163.0
+scale = Vector2(0.55, 0.55)
+texture_normal = ExtResource("7_refresh_n")
+texture_pressed = ExtResource("8_refresh_p")
+texture_hover = ExtResource("9_refresh_h")
+
+[node name="MenuButton" type="TextureButton" parent="UI/HUD"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -324.0
+offset_top = 16.0
+offset_right = -178.0
+offset_bottom = 163.0
+scale = Vector2(0.55, 0.55)
+texture_normal = ExtResource("10_home_n")
+texture_pressed = ExtResource("11_home_p")
+texture_hover = ExtResource("12_home_h")
+
+[node name="PauseButton" type="TextureButton" parent="UI/HUD"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -166.0
+offset_top = 16.0
+offset_right = -20.0
+offset_bottom = 163.0
+scale = Vector2(0.55, 0.55)
+texture_normal = ExtResource("13_pause_n")
+texture_pressed = ExtResource("14_pause_p")
+texture_hover = ExtResource("15_pause_h")
+
+[node name="PauseUI" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="PausePanel" type="Panel" parent="PauseUI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -90.0
+offset_right = 140.0
+offset_bottom = 90.0
+
+[node name="PauseVBox" type="VBoxContainer" parent="PauseUI/PausePanel"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+
+[node name="PauseTitle" type="Label" parent="PauseUI/PausePanel/PauseVBox"]
+layout_mode = 2
+text = "Pause"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="PauseUI/PausePanel/PauseVBox"]
+layout_mode = 2
+text = "Reprendre"
+
+[node name="QuitButton" type="Button" parent="PauseUI/PausePanel/PauseVBox"]
+layout_mode = 2
+text = "Quitter"
+
+[node name="EndUI" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="EndPanel" type="Panel" parent="EndUI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -100.0
+offset_right = 160.0
+offset_bottom = 100.0
+
+[node name="EndVBox" type="VBoxContainer" parent="EndUI/EndPanel"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+
+[node name="EndIcon" type="TextureRect" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(140, 140)
+mouse_filter = 2
+texture = ExtResource("19_win_icon")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="EndTitle" type="Label" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+text = "Fin de partie"
+horizontal_alignment = 1
+
+[node name="EndScore" type="Label" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+text = "Score: 0"
+horizontal_alignment = 1
+
+[node name="EndNextButton" type="Button" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+text = "Niveau suivant"
+
+[node name="EndRestartButton" type="Button" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+text = "Recommencer"
+
+[node name="EndMenuButton" type="Button" parent="EndUI/EndPanel/EndVBox"]
+layout_mode = 2
+text = "Menu"

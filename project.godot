@@ -11,9 +11,18 @@ config_version=5
 [application]
 
 config/name="BallBurstSaga"
-run/main_scene="uid://dteopqsjohcok"
+run/main_scene="res://scenes/Menu.tscn"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameState="*res://scripts/GameState.gd"
+
+[display]
+
+window/size/viewport_width=2400
+window/size/viewport_height=1400
 
 [dotnet]
 

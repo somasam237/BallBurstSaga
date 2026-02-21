@@ -4,6 +4,7 @@ class_name Board
 signal score_gained(points: int)
 signal moves_used(remaining: int)
 signal message(text: String)
+signal game_over(won: bool)
 
 enum State {
 	IDLE,
@@ -24,7 +25,7 @@ enum State {
 @export var start_moves: int = 25
 @export var target_score: int = 5000
 
-@export var piece_scene: PackedScene = preload("res://Scenes/Piece.tscn")
+@export var piece_scene: PackedScene = preload("res://scenes/Piece.tscn")
 
 @onready var pieces_layer: Node2D = $Pieces
 
@@ -37,9 +38,25 @@ var score: int
 var selected: Piece = null
 var swap_a: Piece = null
 var swap_b: Piece = null
+var hint_timer: Timer
+var hint_tween: Tween = null
 
 func _ready() -> void:
 	new_game()
+	_start_hint_timer()
+
+func _start_hint_timer() -> void:
+	hint_timer = Timer.new()
+	hint_timer.wait_time = 10.0
+	hint_timer.one_shot = false
+	hint_timer.autostart = true
+	add_child(hint_timer)
+	hint_timer.timeout.connect(_on_hint_timer_timeout)
+
+func _on_hint_timer_timeout() -> void:
+	if state != State.IDLE:
+		return
+	_show_hint_swap_animation()
 
 func new_game() -> void:
 	_clear_all()
@@ -53,6 +70,10 @@ func new_game() -> void:
 	_fill_without_initial_matches()
 
 	state = State.IDLE
+
+func configure(moves: int, target: int) -> void:
+	start_moves = moves
+	target_score = target
 
 func _clear_all() -> void:
 	for c in pieces_layer.get_children():
@@ -139,7 +160,6 @@ func _handle_click(global_pos: Vector2) -> void:
 		selected = p
 		state = State.SELECTED
 		_pulse(p)
-		emit_signal("message", "Selected (%d,%d)".format([p.grid_x, p.grid_y]))
 		return
 
 	# state == SELECTED
@@ -161,7 +181,7 @@ func _handle_click(global_pos: Vector2) -> void:
 	else:
 		selected = p
 		_pulse(p)
-		emit_signal("message", "Selected (%d,%d)".format([p.grid_x, p.grid_y]))
+		# no selection message
 
 func _consume_move() -> void:
 	moves_left -= 1
@@ -240,7 +260,7 @@ func _resolve_loop() -> void:
 		var points := cleared * 100
 		score += points
 		emit_signal("score_gained", points)
-		emit_signal("message", "Cleared %d balls (+%d)".format([cleared, points]))
+		emit_signal("message", "")
 		await _clear_matches(matches)
 
 		state = State.GRAVITY
@@ -253,7 +273,7 @@ func _resolve_loop() -> void:
 
 # ---------------- MATCH / CLEAR / GRAVITY / REFILL ----------------
 
-func _find_all_matches() -> Array[Piece]:
+func _find_all_matches() -> Array:
 	var matched := {}
 
 	# horizontal
@@ -292,7 +312,10 @@ func _find_all_matches() -> Array[Piece]:
 		if run2.size() >= 3:
 			for rp4 in run2: matched[rp4] = true
 
-	return matched.keys()
+	var out: Array[Piece] = []
+	for k in matched.keys():
+		out.append(k as Piece)
+	return out
 
 func _clear_matches(matches: Array[Piece]) -> void:
 	for p in matches:
@@ -333,9 +356,11 @@ func _check_end() -> void:
 	if score >= target_score:
 		state = State.GAME_OVER
 		emit_signal("message", "🎉 You win! Target reached.")
+		emit_signal("game_over", true)
 	elif moves_left <= 0:
 		state = State.GAME_OVER
 		emit_signal("message", "😵 Out of moves! Try again.")
+		emit_signal("game_over", false)
 
 # -------- Hint (still non-AI) --------
 func find_hint_swap() -> Dictionary:
@@ -355,6 +380,36 @@ func find_hint_swap() -> Dictionary:
 				if r and _swap_would_match(p, r):
 					return {"a": p, "b": r}
 	return {}
+
+func show_hint() -> bool:
+	var hint := find_hint_swap()
+	if hint.is_empty():
+		return false
+	var a: Piece = hint["a"]
+	var b: Piece = hint["b"]
+	if a == null or b == null:
+		return false
+	_show_hint_swap_animation(a, b)
+	return true
+
+func _show_hint_swap_animation(a: Piece = null, b: Piece = null) -> void:
+	if a == null or b == null:
+		var hint := find_hint_swap()
+		if hint.is_empty():
+			return
+		a = hint["a"]
+		b = hint["b"]
+	if a == null or b == null:
+		return
+	if hint_tween and hint_tween.is_running():
+		hint_tween.kill()
+	var pos_a := a.position
+	var pos_b := b.position
+	hint_tween = create_tween()
+	hint_tween.tween_property(a, "position", pos_b, 0.12)
+	hint_tween.parallel().tween_property(b, "position", pos_a, 0.12)
+	hint_tween.tween_property(a, "position", pos_a, 0.12)
+	hint_tween.parallel().tween_property(b, "position", pos_b, 0.12)
 
 func _swap_would_match(a: Piece, b: Piece) -> bool:
 	var ak := a.kind
