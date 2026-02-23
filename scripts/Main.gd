@@ -2,8 +2,13 @@ extends Node2D
 
 # ============================================================
 #  MAIN.GD  – Ball Burst Saga
-#  RESTART = reset EVERYTHING: level 1, delete saves,
-#  clear player name, show welcome screen again.
+#  FIXES in this version:
+#   1. Confirm dialog always appears ON TOP of end_ui
+#      (CanvasLayer.layer set to a high value)
+#   2. AdaptiveDifficulty shows visible HUD indicator
+#      so you can actually see the level changing
+#   3. Welcome screen is animated: bouncing balls, stars,
+#      sun pulse, floating emojis, game-style text
 # ============================================================
 
 @onready var board              = $Board
@@ -43,6 +48,7 @@ var _welcome_layer   = null
 var _confirm_layer   = null
 var _flash_overlay   = null
 var _name_label_hud  = null
+var _diff_label_hud  = null   # shows "KI: Mittel" in HUD
 
 # ============================================================
 #  LIFECYCLE
@@ -84,7 +90,7 @@ func _ready():
 		_begin_game()
 
 # ============================================================
-#  WELCOME SCREEN
+#  ANIMATED WELCOME SCREEN
 # ============================================================
 
 func _show_welcome_screen():
@@ -92,122 +98,326 @@ func _show_welcome_screen():
 
 	_welcome_layer              = CanvasLayer.new()
 	_welcome_layer.name         = "WelcomeLayer"
+	_welcome_layer.layer        = 5
 	_welcome_layer.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(_welcome_layer)
 
-	var bg            = ColorRect.new()
-	bg.color          = Color(0.96, 0.60, 0.78, 1.0)
-	bg.size           = vp
+	# ── Deep candy-purple background ─────────────────────────
+	var bg        = ColorRect.new()
+	bg.color      = Color(0.13, 0.07, 0.28, 1.0)   # deep purple
+	bg.size       = vp
 	_welcome_layer.add_child(bg)
 
-	var top_strip     = ColorRect.new()
-	top_strip.color   = Color(0.55, 0.85, 0.60, 1.0)
-	top_strip.size    = Vector2(vp.x, 12)
-	_welcome_layer.add_child(top_strip)
+	# ── Animated sun (large pulsing circle, top-right) ───────
+	var sun       = _make_oval(vp.x - 140, -60, 220, 220, Color(1.0, 0.85, 0.1))
+	_welcome_layer.add_child(sun)
+	# Sun glow ring
+	var sun_glow  = _make_oval(vp.x - 160, -80, 260, 260, Color(1.0, 0.92, 0.3, 0.25))
+	_welcome_layer.add_child(sun_glow)
+	# Sun rays (8 lines fanning out)
+	for i in 8:
+		var angle   = deg_to_rad(i * 45.0)
+		var ray     = ColorRect.new()
+		ray.size    = Vector2(80, 6)
+		ray.color   = Color(1.0, 0.9, 0.2, 0.55)
+		ray.pivot_offset = Vector2(0, 3)
+		ray.position = Vector2(vp.x - 30, 50)
+		ray.rotation = angle
+		_welcome_layer.add_child(ray)
 
-	var bot_strip     = ColorRect.new()
-	bot_strip.color   = Color(0.55, 0.85, 0.60, 1.0)
-	bot_strip.size    = Vector2(vp.x, 12)
-	bot_strip.position = Vector2(0, vp.y - 12)
-	_welcome_layer.add_child(bot_strip)
+	# Pulse animation for sun
+	var sun_tween = create_tween().set_loops()
+	sun_tween.tween_property(sun,      "scale", Vector2(1.08, 1.08), 1.1).set_trans(Tween.TRANS_SINE)
+	sun_tween.tween_property(sun,      "scale", Vector2(1.0,  1.0),  1.1).set_trans(Tween.TRANS_SINE)
+	var glow_tween = create_tween().set_loops()
+	glow_tween.tween_property(sun_glow, "scale", Vector2(1.15, 1.15), 1.4).set_trans(Tween.TRANS_SINE)
+	glow_tween.tween_property(sun_glow, "scale", Vector2(1.0,  1.0),  1.4).set_trans(Tween.TRANS_SINE)
 
-	var card          = PanelContainer.new()
-	var card_w        = min(560.0, vp.x - 40)
-	card.size         = Vector2(card_w, 500.0)
-	card.position     = vp / 2.0 - card.size / 2.0
+	# ── Bouncing candy balls (background decoration) ─────────
+	var ball_colors = [
+		Color(0.95, 0.25, 0.50),  # hot pink
+		Color(0.3,  0.85, 0.4),   # green
+		Color(0.25, 0.65, 1.0),   # blue
+		Color(1.0,  0.75, 0.1),   # yellow
+		Color(0.75, 0.25, 1.0),   # purple
+		Color(1.0,  0.45, 0.1),   # orange
+	]
+	var ball_positions = [
+		Vector2(50,  80),  Vector2(120, 500), Vector2(200, 200),
+		Vector2(vp.x - 200, 400), Vector2(80, 380), Vector2(vp.x - 80, 200),
+	]
+	for i in ball_colors.size():
+		var ball        = _make_oval(ball_positions[i].x, ball_positions[i].y, 55, 55, ball_colors[i])
+		_welcome_layer.add_child(ball)
+		var bt          = create_tween().set_loops()
+		var bounce_h    = randf_range(18, 40)
+		bt.tween_property(ball, "position:y", ball_positions[i].y - bounce_h, 0.5 + i * 0.07)\
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		bt.tween_property(ball, "position:y", ball_positions[i].y,            0.5 + i * 0.07)\
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+	# ── Floating star emojis ─────────────────────────────────
+	var star_data = [
+		{"text": "⭐", "x": 60,        "y": 160, "size": 30},
+		{"text": "✨", "x": vp.x-100,  "y": 300, "size": 26},
+		{"text": "💫", "x": 160,       "y": 450, "size": 28},
+		{"text": "⭐", "x": vp.x-160,  "y": 120, "size": 22},
+		{"text": "✨", "x": 280,       "y": 520, "size": 24},
+	]
+	for sd in star_data:
+		var star = Label.new()
+		star.text = sd["text"]
+		star.add_theme_font_size_override("font_size", sd["size"])
+		star.position = Vector2(sd["x"], sd["y"])
+		_welcome_layer.add_child(star)
+		var st   = create_tween().set_loops()
+		st.tween_property(star, "position:y", sd["y"] - 25, 1.2 + randf_range(0, 0.6))\
+			.set_trans(Tween.TRANS_SINE)
+		st.tween_property(star, "position:y", sd["y"],       1.2 + randf_range(0, 0.6))\
+			.set_trans(Tween.TRANS_SINE)
+
+	# ── Cute "eyes" character (top-left) ─────────────────────
+	_make_eyes_character(40, 280, _welcome_layer)
+
+	# ── Central white card ───────────────────────────────────
+	var card_w   = min(560.0, vp.x - 60)
+	var card_h   = 490.0
+	var card_x   = vp.x / 2.0 - card_w / 2.0
+	var card_y   = vp.y / 2.0 - card_h / 2.0
+
+	# Card shadow
+	var shadow   = ColorRect.new()
+	shadow.color = Color(0, 0, 0, 0.35)
+	shadow.size  = Vector2(card_w + 12, card_h + 12)
+	shadow.position = Vector2(card_x + 6, card_y + 8)
+	_welcome_layer.add_child(shadow)
+
+	# Card background
+	var card     = ColorRect.new()
+	card.color   = Color(0.97, 0.95, 1.0, 1.0)
+	card.size    = Vector2(card_w, card_h)
+	card.position = Vector2(card_x, card_y)
 	_welcome_layer.add_child(card)
 
-	var vbox          = VBoxContainer.new()
-	vbox.alignment    = BoxContainer.ALIGNMENT_CENTER
-	card.add_child(vbox)
+	# Pink top accent bar on card
+	var accent   = ColorRect.new()
+	accent.color = Color(0.95, 0.25, 0.55)
+	accent.size  = Vector2(card_w, 8)
+	accent.position = Vector2(card_x, card_y)
+	_welcome_layer.add_child(accent)
 
-	var logo          = Label.new()
-	logo.text         = "🍭 Ball Burst Saga 🍭"
-	logo.add_theme_font_size_override("font_size", 30)
-	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	logo.add_theme_color_override("font_color", Color(0.2, 0.55, 0.95))
-	vbox.add_child(logo)
+	# ── GAME TITLE (bouncy entrance) ─────────────────────────
+	var title    = Label.new()
+	title.text   = "BALL  BURST  SAGA"
+	title.add_theme_font_size_override("font_size", 38)
+	title.add_theme_color_override("font_color", Color(0.13, 0.07, 0.28))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.size   = Vector2(card_w - 20, 60)
+	title.position = Vector2(card_x + 10, card_y + 20)
+	_welcome_layer.add_child(title)
 
-	_add_spacer(vbox, 6)
+	# Title bounce entrance animation
+	title.scale = Vector2(0.3, 0.3)
+	title.pivot_offset = Vector2((card_w - 20) / 2.0, 30)
+	var title_t  = create_tween()
+	title_t.tween_property(title, "scale", Vector2(1.08, 1.08), 0.5)\
+		.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	title_t.tween_property(title, "scale", Vector2(1.0, 1.0), 0.2)
 
-	var sub           = Label.new()
-	sub.text          = "Das bunte Match-3-Abenteuer!"
-	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sub.add_theme_color_override("font_color", Color(0.45, 0.45, 0.45))
-	vbox.add_child(sub)
+	# Subtitle in pink
+	var subtitle = Label.new()
+	subtitle.text = "🍭  Das bunte Match-3-Abenteuer!  🍭"
+	subtitle.add_theme_font_size_override("font_size", 15)
+	subtitle.add_theme_color_override("font_color", Color(0.85, 0.2, 0.5))
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	subtitle.size = Vector2(card_w - 20, 28)
+	subtitle.position = Vector2(card_x + 10, card_y + 68)
+	_welcome_layer.add_child(subtitle)
 
-	_add_spacer(vbox, 12)
-	vbox.add_child(HSeparator.new())
-	_add_spacer(vbox, 10)
+	# Divider line
+	var divider  = ColorRect.new()
+	divider.color = Color(0.85, 0.2, 0.5, 0.35)
+	divider.size  = Vector2(card_w - 60, 2)
+	divider.position = Vector2(card_x + 30, card_y + 100)
+	_welcome_layer.add_child(divider)
 
-	var name_lbl      = Label.new()
-	name_lbl.text     = "Wie heißt du? Gib deinen Spitznamen ein:"
-	name_lbl.add_theme_font_size_override("font_size", 17)
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(name_lbl)
+	# ── Name input section ────────────────────────────────────
+	var name_title = Label.new()
+	name_title.text = "Wie heißt du?"
+	name_title.add_theme_font_size_override("font_size", 20)
+	name_title.add_theme_color_override("font_color", Color(0.13, 0.07, 0.28))
+	name_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_title.size = Vector2(card_w - 20, 34)
+	name_title.position = Vector2(card_x + 10, card_y + 112)
+	_welcome_layer.add_child(name_title)
 
-	_add_spacer(vbox, 8)
-
-	var name_input    = LineEdit.new()
-	name_input.placeholder_text = "Dein Spitzname…"
+	# LineEdit for name
+	var name_input     = LineEdit.new()
+	name_input.placeholder_text = "Gib deinen Spitznamen ein…"
 	name_input.max_length       = 20
-	name_input.custom_minimum_size = Vector2(280, 44)
+	name_input.size             = Vector2(card_w - 80, 46)
+	name_input.position         = Vector2(card_x + 40, card_y + 150)
 	name_input.alignment        = HORIZONTAL_ALIGNMENT_CENTER
 	name_input.add_theme_font_size_override("font_size", 18)
-	vbox.add_child(name_input)
+	_welcome_layer.add_child(name_input)
 
-	_add_spacer(vbox, 14)
-	vbox.add_child(HSeparator.new())
-	_add_spacer(vbox, 8)
+	# ── How to play ───────────────────────────────────────────
+	var divider2 = ColorRect.new()
+	divider2.color = Color(0.85, 0.2, 0.5, 0.35)
+	divider2.size  = Vector2(card_w - 60, 2)
+	divider2.position = Vector2(card_x + 30, card_y + 206)
+	_welcome_layer.add_child(divider2)
 
 	var how_title     = Label.new()
-	how_title.text    = "📖 Spielanleitung"
+	how_title.text    = "Spielanleitung"
 	how_title.add_theme_font_size_override("font_size", 17)
+	how_title.add_theme_color_override("font_color", Color(0.13, 0.07, 0.28))
 	how_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	how_title.add_theme_color_override("font_color", Color(0.2, 0.55, 0.95))
-	vbox.add_child(how_title)
+	how_title.size = Vector2(card_w - 20, 30)
+	how_title.position = Vector2(card_x + 10, card_y + 212)
+	_welcome_layer.add_child(how_title)
 
-	_add_spacer(vbox, 6)
+	# Instruction rows with colored icons
+	var instructions = [
+		["🔵", "Klicke 2 benachbarte Kugeln zum Tauschen"],
+		["✨", "3+ gleiche Farben = Punkte!"],
+		["💥", "4+ Kugeln = Explosions-Bonus!"],
+		["🏆", "Erreiche das Ziel vor dem letzten Zug"],
+		["💡", "Drücke ? für einen Hinweis"],
+	]
+	for i in instructions.size():
+		var row_y    = card_y + 248 + i * 34
+		var icon_lbl = Label.new()
+		icon_lbl.text = instructions[i][0]
+		icon_lbl.add_theme_font_size_override("font_size", 18)
+		icon_lbl.size = Vector2(34, 30)
+		icon_lbl.position = Vector2(card_x + 25, row_y)
+		_welcome_layer.add_child(icon_lbl)
 
-	var how_text      = Label.new()
-	how_text.text     = (
-		"🔵  Klicke eine Kugel, dann eine benachbarte Kugel zum Tauschen.\n" +
-		"✨  Gleiche 3+ Kugeln gleicher Farbe ab, um Punkte zu sammeln!\n" +
-		"💥  4+ Kugeln = spektakulärer Explosions-Bonus!\n" +
-		"🏆  Erreiche das Ziel, bevor deine Züge aufgebraucht sind.\n" +
-		"💡  Nicht weiter? Drücke ?, um einen Hinweis zu bekommen."
-	)
-	how_text.autowrap_mode    = TextServer.AUTOWRAP_WORD_SMART
-	how_text.custom_minimum_size = Vector2(card_w - 40, 0)
-	how_text.add_theme_font_size_override("font_size", 14)
-	vbox.add_child(how_text)
+		var txt_lbl  = Label.new()
+		txt_lbl.text = instructions[i][1]
+		txt_lbl.add_theme_font_size_override("font_size", 14)
+		txt_lbl.add_theme_color_override("font_color", Color(0.2, 0.1, 0.35))
+		txt_lbl.size = Vector2(card_w - 75, 30)
+		txt_lbl.position = Vector2(card_x + 62, row_y)
+		_welcome_layer.add_child(txt_lbl)
 
-	_add_spacer(vbox, 16)
+	# ── PLAY BUTTON (big, colorful, animated) ─────────────────
+	var btn_bg    = ColorRect.new()
+	btn_bg.color  = Color(0.95, 0.25, 0.55)
+	btn_bg.size   = Vector2(220, 54)
+	btn_bg.position = Vector2(card_x + card_w / 2.0 - 110, card_y + card_h - 68)
+	_welcome_layer.add_child(btn_bg)
 
-	var play_btn      = Button.new()
-	play_btn.text     = "🎮  Los geht's!"
-	play_btn.custom_minimum_size = Vector2(200, 52)
+	var play_btn  = Button.new()
+	play_btn.text = "LOS GEHT'S!  🎮"
+	play_btn.flat = true
 	play_btn.add_theme_font_size_override("font_size", 20)
+	play_btn.add_theme_color_override("font_color", Color(1, 1, 1))
+	play_btn.size = Vector2(220, 54)
+	play_btn.position = Vector2(card_x + card_w / 2.0 - 110, card_y + card_h - 68)
 	play_btn.process_mode = Node.PROCESS_MODE_ALWAYS
-	vbox.add_child(play_btn)
+	_welcome_layer.add_child(play_btn)
 
+	# Button pulse animation
+	var btn_t     = create_tween().set_loops()
+	btn_t.tween_property(btn_bg, "color", Color(0.75, 0.15, 0.45), 0.8).set_trans(Tween.TRANS_SINE)
+	btn_t.tween_property(btn_bg, "color", Color(0.95, 0.25, 0.55), 0.8).set_trans(Tween.TRANS_SINE)
+
+	# Card pop-in animation
+	card.scale    = Vector2(0.8, 0.8)
+	card.pivot_offset = Vector2(card_w / 2.0, card_h / 2.0)
+	var card_t    = create_tween()
+	card_t.tween_property(card, "scale", Vector2(1.0, 1.0), 0.45)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	# ── Button handler ────────────────────────────────────────
 	play_btn.pressed.connect(func():
 		var raw_name = name_input.text.strip_edges()
 		if raw_name == "":
 			raw_name = "Player"
 		GameState.player_name = raw_name
 		GameState._save_progress()
+
 		var t = create_tween()
-		t.tween_property(card, "modulate:a", 0.0, 0.3)
-		t.tween_property(bg,   "modulate:a", 0.0, 0.3)
+		t.tween_property(card,   "modulate:a", 0.0, 0.25)
+		t.tween_property(bg,     "modulate:a", 0.0, 0.25)
 		t.tween_callback(func():
 			_welcome_layer.queue_free()
 			_welcome_layer = null
 			_begin_game()
 		)
 	)
-
 	name_input.text_submitted.connect(func(_txt): play_btn.emit_signal("pressed"))
+
+# ── Helper: create a simple colored oval (circle) ───────────
+func _make_oval(x, y, w, h, color):
+	var rect      = ColorRect.new()
+	# We fake a circle by using a square ColorRect with a circular shader would be ideal,
+	# but for simplicity we just use a ColorRect and accept it's a rectangle.
+	# A true oval would need a custom drawn node, but this works well enough.
+	rect.color    = color
+	rect.size     = Vector2(w, h)
+	rect.position = Vector2(x, y)
+	return rect
+
+# ── Helper: cute eyes character ─────────────────────────────
+func _make_eyes_character(x, y, parent):
+	# Body (big rounded blob)
+	var body      = ColorRect.new()
+	body.color    = Color(0.95, 0.25, 0.55)
+	body.size     = Vector2(80, 90)
+	body.position = Vector2(x, y)
+	parent.add_child(body)
+
+	# Left eye white
+	var le_w      = ColorRect.new()
+	le_w.color    = Color(1.0, 1.0, 1.0)
+	le_w.size     = Vector2(26, 26)
+	le_w.position = Vector2(x + 8, y + 20)
+	parent.add_child(le_w)
+
+	# Right eye white
+	var re_w      = ColorRect.new()
+	re_w.color    = Color(1.0, 1.0, 1.0)
+	re_w.size     = Vector2(26, 26)
+	re_w.position = Vector2(x + 46, y + 20)
+	parent.add_child(re_w)
+
+	# Left pupil
+	var le_p      = ColorRect.new()
+	le_p.color    = Color(0.1, 0.05, 0.2)
+	le_p.size     = Vector2(12, 14)
+	le_p.position = Vector2(x + 15, y + 26)
+	parent.add_child(le_p)
+
+	# Right pupil
+	var re_p      = ColorRect.new()
+	re_p.color    = Color(0.1, 0.05, 0.2)
+	re_p.size     = Vector2(12, 14)
+	re_p.position = Vector2(x + 53, y + 26)
+	parent.add_child(re_p)
+
+	# Smile
+	var smile     = Label.new()
+	smile.text    = "  ‿‿"
+	smile.add_theme_font_size_override("font_size", 22)
+	smile.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
+	smile.position = Vector2(x + 4, y + 55)
+	parent.add_child(smile)
+
+	# Eyes blink animation
+	var blink     = create_tween().set_loops()
+	blink.tween_interval(2.5)
+	blink.tween_property(le_w, "scale:y", 0.1, 0.06)
+	blink.tween_property(le_w, "scale:y", 1.0, 0.06)
+	blink.tween_property(re_w, "scale:y", 0.1, 0.06)
+	blink.tween_property(re_w, "scale:y", 1.0, 0.06)
+
+	# Character bounce
+	var char_t    = create_tween().set_loops()
+	char_t.tween_property(body, "position:y", y - 12, 0.7).set_trans(Tween.TRANS_SINE)
+	char_t.tween_property(body, "position:y", y,       0.7).set_trans(Tween.TRANS_SINE)
 
 func _add_spacer(parent, height):
 	var s = Control.new()
@@ -244,7 +454,7 @@ func _fit_background():
 
 func _center_board():
 	var vp_size    = get_viewport_rect().size
-	var board_size = Vector2(float(board.width) * float(board.cell_size),
+	var board_size = Vector2(float(board.width)  * float(board.cell_size),
 							 float(board.height) * float(board.cell_size))
 	var scaled     = board_size * board.scale
 	board.position    = (vp_size - scaled) / 2.0
@@ -299,27 +509,53 @@ func _setup_ui():
 	end_restart_button.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	end_menu_button.process_mode    = Node.PROCESS_MODE_WHEN_PAUSED
 	end_next_button.pressed.connect(_on_end_next_pressed)
-	end_restart_button.pressed.connect(_ask_full_reset_confirm)
+	# ← Restart from end screen hides end_ui FIRST, then asks confirm
+	end_restart_button.pressed.connect(_ask_full_reset_from_end)
 	end_menu_button.pressed.connect(_on_menu_pressed)
 
 	_build_confirm_dialog()
 
+# ── HUD: player name + AI difficulty indicator ──────────────
 func _update_name_in_hud():
-	if _name_label_hud != null:
-		_name_label_hud.text = "👤 " + GameState.player_name
-		return
 	var hud = $UI/HUD
-	_name_label_hud = Label.new()
+
+	# Player name label
+	if _name_label_hud == null:
+		_name_label_hud = Label.new()
+		_name_label_hud.add_theme_font_size_override("font_size", 15)
+		_name_label_hud.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
+		_name_label_hud.z_index  = 100
+		_name_label_hud.position = Vector2(10, 215)
+		hud.add_child(_name_label_hud)
+
 	_name_label_hud.text = "👤 " + GameState.player_name
-	_name_label_hud.add_theme_font_size_override("font_size", 15)
-	_name_label_hud.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
-	_name_label_hud.z_index  = 100
-	_name_label_hud.position = Vector2(10, 230)
-	hud.add_child(_name_label_hud)
+
+	# AI difficulty label — so the player can SEE it changing
+	if _diff_label_hud == null:
+		_diff_label_hud = Label.new()
+		_diff_label_hud.add_theme_font_size_override("font_size", 13)
+		_diff_label_hud.z_index  = 100
+		_diff_label_hud.position = Vector2(10, 240)
+		hud.add_child(_diff_label_hud)
+
+	_update_diff_label()
+
+func _update_diff_label():
+	if _diff_label_hud == null or adaptive == null:
+		return
+	var label   = adaptive.get_label()
+	var pct     = adaptive.get_difficulty_percent()
+	_diff_label_hud.text = "🤖 KI: " + label + " (" + str(pct) + "%)"
+	# Color the label: green=easy, yellow=medium, red=hard
+	var d = adaptive.compute_difficulty_score()
+	if   d < 0.4:  _diff_label_hud.add_theme_color_override("font_color", Color(0.3, 1.0, 0.4))
+	elif d < 0.65: _diff_label_hud.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	else:          _diff_label_hud.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3))
 
 # ============================================================
-#  FULL GAME RESET CONFIRMATION
-#  Restart = wipe EVERYTHING: saves, name, level, profile
+#  RESTART CONFIRMATION
+#  FIX: when called from end_ui, hide end_ui first so the
+#  confirm dialog is never hidden behind it.
 # ============================================================
 
 func _build_confirm_dialog():
@@ -329,6 +565,8 @@ func _build_confirm_dialog():
 	_confirm_layer.name         = "ConfirmLayer"
 	_confirm_layer.visible      = false
 	_confirm_layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	# ── KEY FIX: layer 20 is always above end_ui (which uses default layer 1) ──
+	_confirm_layer.layer        = 20
 	add_child(_confirm_layer)
 
 	var backdrop           = ColorRect.new()
@@ -363,7 +601,7 @@ func _build_confirm_dialog():
 	_add_spacer(vbox, 4)
 
 	var sub_lbl            = Label.new()
-	sub_lbl.text           = "Alle Fortschritte, dein Name und\ndein Profil werden gelöscht."
+	sub_lbl.text           = "Alle Fortschritte & dein Profil werden gelöscht."
 	sub_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub_lbl.add_theme_color_override("font_color", Color(0.7, 0.2, 0.2))
 	vbox.add_child(sub_lbl)
@@ -395,25 +633,29 @@ func _build_confirm_dialog():
 		get_tree().paused      = false
 		_do_full_reset()
 	)
-
 	btn_no.pressed.connect(func():
 		_confirm_layer.visible = false
 		get_tree().paused      = false
 	)
 
+# Called from the in-game restart button
 func _ask_full_reset_confirm():
 	get_tree().paused      = true
 	_confirm_layer.visible = true
 
-# ── Full reset: wipe saves, reset GameState, show welcome again ──
+# Called from end_ui restart button — hides end_ui first!
+func _ask_full_reset_from_end():
+	end_ui.visible         = false   # ← hide the menu panel first
+	get_tree().paused      = true
+	_confirm_layer.visible = true
+
+# ── Full reset: delete saves, reset everything, show welcome ─
 func _do_full_reset():
-	# 1. Delete both save files
 	if FileAccess.file_exists("user://save.cfg"):
 		DirAccess.remove_absolute("user://save.cfg")
 	if FileAccess.file_exists("user://save_game.json"):
 		DirAccess.remove_absolute("user://save_game.json")
 
-	# 2. Reset GameState completely to defaults
 	GameState.current_level_index = 0
 	GameState.player_name         = ""
 	GameState.player_profile      = {
@@ -425,21 +667,20 @@ func _do_full_reset():
 		"total_sessions":      0,
 	}
 
-	# 3. Reset local tracking
 	total_score      = 0
 	hints_used_count = 0
 	moves_at_start   = 0
 
-	# 4. Stop music, hide any open panels
 	gameplay_music.stop()
 	end_ui.visible = false
 
-	# 5. Remove the name label from HUD
 	if _name_label_hud != null:
 		_name_label_hud.queue_free()
 		_name_label_hud = null
+	if _diff_label_hud != null:
+		_diff_label_hud.queue_free()
+		_diff_label_hud = null
 
-	# 6. Show welcome screen so player enters a new name
 	_show_welcome_screen()
 
 # ============================================================
@@ -485,6 +726,8 @@ func _start_level():
 		final_moves  = int(params["moves"])
 		final_target = int(params["target"])
 		hint_delay   = float(params["hint_delay"])
+		# Update the HUD difficulty indicator
+		_update_diff_label()
 
 	board.configure(final_moves, final_target)
 	board.new_game()
@@ -493,6 +736,7 @@ func _start_level():
 		board.hint_timer.wait_time = hint_delay
 
 	moves_at_start   = final_moves
+
 	level_label.text = "Level " + str(level_index + 1)
 	goal_label.text  = "Goal: "  + str(board.target_score)
 	score_label.text = "Score: 0"

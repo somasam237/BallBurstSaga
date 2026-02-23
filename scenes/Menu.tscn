@@ -10,7 +10,7 @@
 [ext_resource type="AudioStream" uid="uid://fp4yu8mxavjv" path="res://assets/sounds/GameSound/MenuSound/cheerful-flooding-birds-singing-overhead.mp3" id="6_menu_aud"]
 [ext_resource type="AudioStream" uid="uid://03oqh2ej51vq" path="res://assets/sounds/GameSound/BottonClickSound/mixkit-unlock-game-notification-253.wav" id="7_click_aud"]
 [ext_resource type="Texture2D" uid="uid://dp4atrgj3xln8" path="res://assets/Ball_Burst__4_-removebg-preview.png" id="7_pp5m5"]
-[ext_resource type="Texture2D" uid="uid://b1oo2xis6opok" path="res://assets/Ball_Burst__5_-removebg-preview.png" id="8_pp5m5"]
+[ext_resource type="Texture2D" uid="uid://dc5tnbws6k5qb" path="res://assets/Ball_Burst__6_-removebg-preview.png" id="8_pp5m5"]
 
 [node name="Menu" type="Control"]
 layout_mode = 3

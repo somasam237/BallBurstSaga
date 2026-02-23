@@ -2,55 +2,27 @@ extends Node
 
 # ============================================================
 #  ADAPTIVEDIFFCULTY.GD
-#
-#  This script computes a "difficulty score" D between 0 and 1
-#  based on how the player has been performing, then uses D
-#  to adjust 3 things before each level starts:
-#
-#    1. MOVES ALLOWED
-#       D close to 0 (struggling) → player gets up to +4 extra moves
-#       D close to 1 (skilled)    → player gets up to -3 fewer moves
-#
-#    2. TARGET SCORE
-#       D close to 0 → target is multiplied by 0.82 (lower bar)
-#       D close to 1 → target is multiplied by 1.18 (higher bar)
-#
-#    3. HINT DELAY
-#       D close to 0 → auto-hint fires after only 5 seconds
-#       D close to 1 → auto-hint fires after 25 seconds
-#
-#  The player never sees any of this. The game simply feels
-#  naturally easier or harder based on their history.
+#  More aggressive adjustments so the player can actually
+#  feel the difference between Easy and Hard.
 # ============================================================
 
+# Factor weights (must sum to 1.0)
+const W_WIN_RATE    = 0.40
+const W_MOVES_EFF   = 0.25
+const W_HINT_USAGE  = 0.20
+const W_WIN_STREAK  = 0.15
 
-# ── How much each factor influences the difficulty score ──
-# These four weights must add up to 1.0.
-const W_WIN_RATE    = 0.40   # biggest signal: are you winning?
-const W_MOVES_EFF   = 0.25   # do you finish with moves to spare?
-const W_HINT_USAGE  = 0.20   # do you need hints often?
-const W_WIN_STREAK  = 0.15   # have you been winning lately?
+# Wider adjustment ranges so the effect is actually noticeable
+const MOVES_BONUS_MAX  = 7      # struggling player gets +7 moves
+const MOVES_MALUS_MAX  = 4      # skilled player loses 4 moves
+const TARGET_MIN_MULT  = 0.70   # target can go DOWN 30% for weak players
+const TARGET_MAX_MULT  = 1.35   # target can go UP 35% for strong players
+const HINT_DELAY_MIN   = 4.0    # hint fires in 4s for struggling players
+const HINT_DELAY_MAX   = 30.0   # hint fires in 30s for skilled players
 
-# ── Boundaries for each adjusted parameter ──
-const MOVES_BONUS_MAX  = 4     # max extra moves for a struggling player
-const MOVES_MALUS_MAX  = 3     # max moves removed for a skilled player
-const TARGET_MIN_MULT  = 0.82  # target score multiplied by this at minimum
-const TARGET_MAX_MULT  = 1.18  # target score multiplied by this at maximum
-const HINT_DELAY_MIN   = 5.0   # seconds before auto-hint (easy mode)
-const HINT_DELAY_MAX   = 25.0  # seconds before auto-hint (hard mode)
-
-
-# ============================================================
-#  MAIN FUNCTION  –  call this in Main.gd at level start
-# ============================================================
-
-# Takes the raw level dict {"moves": X, "target": Y}
-# Returns a new dict with adjusted values + hint_delay + score D.
+# ── Main function: call this in Main.gd at level start ──────
 func get_adapted_level(base_level):
-	var d = _compute_difficulty_score()
-
-	# lerp(a, b, t) returns  a + t*(b-a)
-	# At D=0: lerp gives the EASY side. At D=1: gives the HARD side.
+	var d = compute_difficulty_score()
 
 	var moves_delta  = int(lerp(float(MOVES_BONUS_MAX), float(-MOVES_MALUS_MAX), d))
 	var final_moves  = max(5, int(base_level["moves"]) + moves_delta)
@@ -67,39 +39,32 @@ func get_adapted_level(base_level):
 		"difficulty":  d,
 	}
 
-
-# Returns a simple label for the current difficulty band.
-# You can show this in the HUD if you want.
+# Returns a label for the current difficulty band
 func get_label():
-	var d = _compute_difficulty_score()
-	if   d < 0.30: return "Easy"
-	elif d < 0.55: return "Medium"
-	elif d < 0.75: return "Hard"
-	else:          return "Expert"
+	var d = compute_difficulty_score()
+	if   d < 0.25: return "Sehr leicht"
+	elif d < 0.45: return "Leicht"
+	elif d < 0.60: return "Mittel"
+	elif d < 0.78: return "Schwer"
+	else:          return "Experte"
 
+# Returns difficulty as 0–100 for a progress bar style display
+func get_difficulty_percent():
+	return int(compute_difficulty_score() * 100.0)
 
-# ============================================================
-#  DIFFICULTY SCORE CALCULATION  (private)
-# ============================================================
-
-# Reads the player_profile from GameState and returns D in [0, 1].
-# Higher D  →  the AI thinks the player is skilled  →  harder parameters.
-func _compute_difficulty_score():
+# ── Core algorithm ──────────────────────────────────────────
+func compute_difficulty_score():
 	var p = GameState.player_profile
 
-	# Factor 1: win_rate is already 0–1 from the EMA
-	var f_win = float(p["win_rate"])
+	# Only apply meaningful adjustments after at least 2 sessions
+	# so the first level always starts neutral
+	if int(p["total_sessions"]) < 2:
+		return 0.5
 
-	# Factor 2: a player who uses fewer moves is more efficient (stronger)
-	# avg_moves_ratio is 0.0 (used no moves) to 1.0 (used all moves)
-	# So efficiency = 1 - ratio
-	var f_moves = 1.0 - float(p["avg_moves_ratio"])
-
-	# Factor 3: a player who rarely uses hints is stronger
-	var f_hints = 1.0 - float(p["hint_usage_rate"])
-
-	# Factor 4: win streak, capped at 5 consecutive wins = 1.0
-	var streak = clamp(float(int(p["consecutive_wins"])) / 5.0, 0.0, 1.0)
+	var f_win    = float(p["win_rate"])
+	var f_moves  = 1.0 - float(p["avg_moves_ratio"])
+	var f_hints  = 1.0 - float(p["hint_usage_rate"])
+	var streak   = clamp(float(int(p["consecutive_wins"])) / 4.0, 0.0, 1.0)
 
 	var score = (f_win   * W_WIN_RATE
 			+    f_moves  * W_MOVES_EFF
