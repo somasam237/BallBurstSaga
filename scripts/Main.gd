@@ -7,7 +7,8 @@ extends Node2D
 @onready var score_label: Label = $UI/HUD/ScoreLabel
 @onready var moves_label: Label = $UI/HUD/MovesLabel
 @onready var goal_label: Label = $UI/HUD/GoalLabel
-@onready var hint_button: BaseButton = $UI/HUD/HintButton
+@onready var hint_classic_button: BaseButton = $UI/HUD/HintClassicButton
+@onready var hint_best_button: BaseButton = $UI/HUD/HintBestButton
 @onready var restart_button: BaseButton = $UI/HUD/RestartButton
 @onready var menu_button: BaseButton = $UI/HUD/MenuButton
 @onready var pause_button: BaseButton = $UI/HUD/PauseButton
@@ -83,11 +84,27 @@ func _on_moves_used(remaining: int) -> void:
 func _on_message(t: String) -> void:
 	message_label.text = t
 
-func _on_hint_pressed() -> void:
-	if not board.show_hint():
-		message_label.text = "No hints found."
+func _on_hint_classic_pressed() -> void:
+	if not board.can_pay_hint_cost(1):
+		message_label.text = "Not enough moves for Classic Hint."
 		return
-	message_label.text = "Hint shown."
+	if not board.show_classic_hint():
+		message_label.text = "No classic hint found."
+		return
+	board.pay_hint_cost(1)
+	message_label.text = "Classic hint shown. -1 move"
+
+func _on_hint_best_pressed() -> void:
+	if not board.can_pay_hint_cost(5):
+		message_label.text = "Not enough moves for Best Hint."
+		return
+	var hint := board.show_best_hint()
+	if hint.is_empty():
+		message_label.text = "No best hint found."
+		return
+	board.pay_hint_cost(5)
+	var score := int(hint.get("score", 0))
+	message_label.text = "Best hint shown (-5 moves, score: " + str(score) + ")."
 
 func _setup_ui() -> void:
 	score_label.visible = true
@@ -101,7 +118,8 @@ func _setup_ui() -> void:
 
 	message_label.visible = true
 	message_label.z_index = 100
-	hint_button.pressed.connect(_on_hint_pressed)
+	hint_classic_button.pressed.connect(_on_hint_classic_pressed)
+	hint_best_button.pressed.connect(_on_hint_best_pressed)
 	restart_button.pressed.connect(_on_restart_pressed)
 	menu_button.pressed.connect(_on_menu_pressed)
 	pause_button.process_mode = Node.PROCESS_MODE_ALWAYS

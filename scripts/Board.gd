@@ -1,5 +1,6 @@
 extends Node2D
 class_name Board
+const HintEngine = preload("res://scripts/HintEngine.gd")
 
 signal score_gained(points: int)
 signal moves_used(remaining: int)
@@ -43,7 +44,6 @@ var hint_tween: Tween = null
 
 func _ready() -> void:
 	new_game()
-	_start_hint_timer()
 
 func _start_hint_timer() -> void:
 	hint_timer = Timer.new()
@@ -54,9 +54,7 @@ func _start_hint_timer() -> void:
 	hint_timer.timeout.connect(_on_hint_timer_timeout)
 
 func _on_hint_timer_timeout() -> void:
-	if state != State.IDLE:
-		return
-	_show_hint_swap_animation()
+	return
 
 func new_game() -> void:
 	_clear_all()
@@ -186,6 +184,20 @@ func _handle_click(global_pos: Vector2) -> void:
 func _consume_move() -> void:
 	moves_left -= 1
 	emit_signal("moves_used", moves_left)
+
+func can_pay_hint_cost(cost: int) -> bool:
+	if state == State.GAME_OVER:
+		return false
+	if cost <= 0:
+		return true
+	return moves_left >= cost
+
+func pay_hint_cost(cost: int) -> void:
+	if cost <= 0:
+		return
+	moves_left = max(0, moves_left - cost)
+	emit_signal("moves_used", moves_left)
+	_check_end()
 
 func _are_adjacent(a: Piece, b: Piece) -> bool:
 	return (abs(a.grid_x - b.grid_x) + abs(a.grid_y - b.grid_y)) == 1
@@ -363,25 +375,41 @@ func _check_end() -> void:
 		emit_signal("game_over", false)
 
 # -------- Hint (still non-AI) --------
+func _build_kind_grid() -> Array:
+	var kind_grid: Array = []
+	for x in range(width):
+		var col: Array = []
+		for y in range(height):
+			var p: Piece = grid[x][y]
+			col.append(p.kind if p != null else -1)
+		kind_grid.append(col)
+	return kind_grid
+
 func find_hint_swap() -> Dictionary:
 	if state != State.IDLE and state != State.SELECTED:
 		return {}
-	for y in height:
-		for x in width:
-			var p: Piece = grid[x][y]
-			if p == null:
-				continue
-			if x + 1 < width:
-				var q: Piece = grid[x+1][y]
-				if q and _swap_would_match(p, q):
-					return {"a": p, "b": q}
-			if y + 1 < height:
-				var r: Piece = grid[x][y+1]
-				if r and _swap_would_match(p, r):
-					return {"a": p, "b": r}
-	return {}
+	var coords := HintEngine.find_classic_hint(_build_kind_grid(), width, height)
+	if coords.is_empty():
+		return {}
+	var p: Piece = grid[int(coords["x1"])][int(coords["y1"])]
+	var q: Piece = grid[int(coords["x2"])][int(coords["y2"])]
+	if p == null or q == null:
+		return {}
+	return {"a": p, "b": q}
 
-func show_hint() -> bool:
+func find_best_hint_swap() -> Dictionary:
+	if state != State.IDLE and state != State.SELECTED:
+		return {}
+	var coords := HintEngine.find_best_hint(_build_kind_grid(), width, height)
+	if coords.is_empty():
+		return {}
+	var p: Piece = grid[int(coords["x1"])][int(coords["y1"])]
+	var q: Piece = grid[int(coords["x2"])][int(coords["y2"])]
+	if p == null or q == null:
+		return {}
+	return {"a": p, "b": q, "score": int(coords.get("score", 0))}
+
+func show_classic_hint() -> bool:
 	var hint := find_hint_swap()
 	if hint.is_empty():
 		return false
@@ -391,6 +419,20 @@ func show_hint() -> bool:
 		return false
 	_show_hint_swap_animation(a, b)
 	return true
+
+func show_best_hint() -> Dictionary:
+	var hint := find_best_hint_swap()
+	if hint.is_empty():
+		return {}
+	var a: Piece = hint["a"]
+	var b: Piece = hint["b"]
+	if a == null or b == null:
+		return {}
+	_show_hint_swap_animation(a, b)
+	return hint
+
+func show_hint() -> bool:
+	return show_classic_hint()
 
 func _show_hint_swap_animation(a: Piece = null, b: Piece = null) -> void:
 	if a == null or b == null:

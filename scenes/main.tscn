@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://dteopqsjohcok"]
+[gd_scene load_steps=26 format=3 uid="uid://dteopqsjohcok"]
 
 [ext_resource type="Script" uid="uid://btph6qc25jud0" path="res://scripts/Main.gd" id="1_50glp"]
 [ext_resource type="Script" uid="uid://dsy7etipvjpft" path="res://scripts/Board.gd" id="2_x0t5g"]
@@ -22,6 +22,9 @@
 [ext_resource type="Texture2D" path="res://assets/DesignAsset/GameIcon/broken-heart.png" id="20_lose_icon"]
 [ext_resource type="AudioStream" path="res://assets/sounds/GameSound/Succes Sound/mixkit-game-level-completed-2059.wav" id="21_win_sfx"]
 [ext_resource type="AudioStream" path="res://assets/sounds/GameSound/LosingSound/mixkit-player-losing-or-failing-2042.wav" id="22_lose_sfx"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Badges (1).png" id="23_best_n"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Badges (2).png" id="24_best_p"]
+[ext_resource type="Texture2D" path="res://assets/DesignAsset/freecandybuttons/png/Badges (3).png" id="25_best_h"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_board_bg"]
 bg_color = Color(1, 1, 1, 0.6)
@@ -140,7 +143,20 @@ theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HintButton" type="TextureButton" parent="UI/HUD"]
+[node name="HintClassicButton" type="TextureButton" parent="UI/HUD"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -798.0
+offset_top = 16.0
+offset_right = -652.0
+offset_bottom = 163.0
+scale = Vector2(0.55, 0.55)
+texture_normal = ExtResource("4_help_n")
+texture_pressed = ExtResource("5_help_p")
+texture_hover = ExtResource("6_help_h")
+
+[node name="HintBestButton" type="TextureButton" parent="UI/HUD"]
 layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
@@ -149,9 +165,9 @@ offset_top = 16.0
 offset_right = -494.0
 offset_bottom = 163.0
 scale = Vector2(0.55, 0.55)
-texture_normal = ExtResource("4_help_n")
-texture_pressed = ExtResource("5_help_p")
-texture_hover = ExtResource("6_help_h")
+texture_normal = ExtResource("23_best_n")
+texture_pressed = ExtResource("24_best_p")
+texture_hover = ExtResource("25_best_h")
 
 [node name="MessageLabel" type="Label" parent="UI/HUD"]
 layout_mode = 0
