@@ -545,7 +545,7 @@ func _update_diff_label():
 		return
 	var label   = adaptive.get_label()
 	var pct     = adaptive.get_difficulty_percent()
-	_diff_label_hud.text = "🤖 KI: " + label + " (" + str(pct) + "%)"
+	# _diff_label_hud.text = "🤖 KI: " + label + " (" + str(pct) + "%)", we don't need this label.
 	# Color the label: green=easy, yellow=medium, red=hard
 	var d = adaptive.compute_difficulty_score()
 	if   d < 0.4:  _diff_label_hud.add_theme_color_override("font_color", Color(0.3, 1.0, 0.4))

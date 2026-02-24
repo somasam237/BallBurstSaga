@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dihjdc2mkx2jk"]
+[gd_scene load_steps=12 format=3 uid="uid://dmf0d1x6vbfbm"]
 
 [ext_resource type="Script" uid="uid://csxmxcp3pid6" path="res://scripts/Menu.gd" id="1_rv0k4"]
 [ext_resource type="Texture2D" uid="uid://codd5nqip8j4o" path="res://assets/DesignAsset/freecandybuttons/png/Blank/Text (1).png" id="2_5u0mn"]

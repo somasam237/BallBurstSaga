@@ -20,7 +20,7 @@
 [ext_resource type="Texture2D" uid="uid://don6fxyooqy37" path="res://assets/DesignAsset/Candy World/Preview.png" id="18_bg"]
 [ext_resource type="Texture2D" uid="uid://dxbdemfotyekg" path="res://assets/DesignAsset/GameIcon/stars-stack.png" id="19_win_icon"]
 [ext_resource type="AudioStream" uid="uid://cjrj01p3nkwg3" path="res://assets/sounds/GameSound/Succes Sound/mixkit-game-level-completed-2059.wav" id="21_win_sfx"]
-[ext_resource type="Script" uid="uid://r7p6bqetx1pd" path="res://scripts/AdaptiveDifficulty.gd" id="22_jscy8"]
+[ext_resource type="Script" path="res://scripts/AdaptiveDifficulty.gd" id="22_jscy8"]
 [ext_resource type="AudioStream" uid="uid://bkngy7tvhx3ob" path="res://assets/sounds/GameSound/LosingSound/mixkit-player-losing-or-failing-2042.wav" id="22_lose_sfx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_board_bg"]
