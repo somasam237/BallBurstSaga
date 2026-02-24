@@ -42,6 +42,15 @@ var _combo_count = 0
 func _ready():
 	new_game()
 	_start_hint_timer()
+	
+func _add_background() -> void:
+	var bg := TextureRect.new()
+	bg.texture = load("res://assets/Ball_bg.png")
+	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	add_child(bg)
+	move_child(bg, 0)
+	# Taille définie APRÈS add_child
+
 
 func _start_hint_timer():
 	hint_timer            = Timer.new()
