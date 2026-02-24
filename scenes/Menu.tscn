@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://mbu4fle8rkr1"]
+[gd_scene format=3 uid="uid://mbu4fle8rkr1"]
 
 [ext_resource type="Script" uid="uid://csxmxcp3pid6" path="res://scripts/Menu.gd" id="1_rv0k4"]
 [ext_resource type="Texture2D" uid="uid://codd5nqip8j4o" path="res://assets/DesignAsset/freecandybuttons/png/Blank/Text (1).png" id="2_5u0mn"]
@@ -12,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://dp4atrgj3xln8" path="res://assets/Ball_Burst__4_-removebg-preview.png" id="7_pp5m5"]
 [ext_resource type="Texture2D" uid="uid://dc5tnbws6k5qb" path="res://assets/Ball_Burst__6_-removebg-preview.png" id="8_pp5m5"]
 
-[node name="Menu" type="Control"]
+[node name="Menu" type="Control" unique_id=2106286926]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,7 +21,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_rv0k4")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=1086264910]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -32,7 +32,7 @@ mouse_filter = 2
 texture = ExtResource("2_wfhf6")
 expand_mode = 1
 
-[node name="Girl" type="TextureRect" parent="."]
+[node name="Girl" type="TextureRect" parent="." unique_id=1704060188]
 layout_direction = 2
 layout_mode = 0
 offset_left = 941.0
@@ -43,15 +43,15 @@ grow_vertical = 0
 mouse_filter = 2
 texture = ExtResource("5_1abgu")
 
-[node name="MenuMusic" type="AudioStreamPlayer" parent="."]
+[node name="MenuMusic" type="AudioStreamPlayer" parent="." unique_id=359981936]
 stream = ExtResource("6_menu_aud")
 volume_db = -6.0
 
-[node name="ClickSfx" type="AudioStreamPlayer" parent="."]
+[node name="ClickSfx" type="AudioStreamPlayer" parent="." unique_id=433916316]
 stream = ExtResource("7_click_aud")
 volume_db = -3.0
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="VBox" type="VBoxContainer" parent="." unique_id=773219879]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -67,34 +67,34 @@ grow_vertical = 2
 theme_override_constants/separation = 48
 alignment = 1
 
-[node name="TitleRow" type="HBoxContainer" parent="VBox"]
+[node name="TitleRow" type="HBoxContainer" parent="VBox" unique_id=546174369]
 layout_mode = 2
 alignment = 1
 
-[node name="BallBurstColumn" type="VBoxContainer" parent="VBox/TitleRow"]
+[node name="BallBurstColumn" type="VBoxContainer" parent="VBox/TitleRow" unique_id=660628641]
 layout_mode = 2
 
-[node name="Ball" type="TextureRect" parent="VBox/TitleRow/BallBurstColumn"]
+[node name="Ball" type="TextureRect" parent="VBox/TitleRow/BallBurstColumn" unique_id=1479286432]
 custom_minimum_size = Vector2(300, 180)
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("6_4umqm")
 expand_mode = 1
 
-[node name="Burst" type="TextureRect" parent="VBox/TitleRow/BallBurstColumn"]
+[node name="Burst" type="TextureRect" parent="VBox/TitleRow/BallBurstColumn" unique_id=311110916]
 custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("7_pp5m5")
 expand_mode = 1
 
-[node name="Saga" type="TextureRect" parent="VBox/TitleRow"]
+[node name="Saga" type="TextureRect" parent="VBox/TitleRow" unique_id=1424372309]
 custom_minimum_size = Vector2(300, 150)
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("8_pp5m5")
 
-[node name="Title" type="Label" parent="VBox"]
+[node name="Title" type="Label" parent="VBox" unique_id=1554068569]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.541, 0.749, 0.122, 1)
@@ -102,19 +102,19 @@ theme_override_font_sizes/font_size = 70
 text = "Ball Burst Saga"
 horizontal_alignment = 1
 
-[node name="TitleSpacer" type="Control" parent="VBox"]
+[node name="TitleSpacer" type="Control" parent="VBox" unique_id=18142164]
 visible = false
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 
-[node name="PlayButton" type="TextureButton" parent="VBox"]
+[node name="PlayButton" type="TextureButton" parent="VBox" unique_id=504775680]
 layout_mode = 2
 size_flags_horizontal = 4
 texture_normal = ExtResource("2_5u0mn")
 texture_pressed = ExtResource("3_4o0kq")
 texture_hover = ExtResource("4_v2r3f")
 
-[node name="PlayLabel" type="Label" parent="VBox/PlayButton"]
+[node name="PlayLabel" type="Label" parent="VBox/PlayButton" unique_id=714424441]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -127,14 +127,14 @@ text = "Play"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RestartButton" type="TextureButton" parent="VBox"]
+[node name="RestartButton" type="TextureButton" parent="VBox" unique_id=1144878540]
 layout_mode = 2
 size_flags_horizontal = 4
 texture_normal = ExtResource("2_5u0mn")
 texture_pressed = ExtResource("3_4o0kq")
 texture_hover = ExtResource("4_v2r3f")
 
-[node name="RestartLabel" type="Label" parent="VBox/RestartButton"]
+[node name="RestartLabel" type="Label" parent="VBox/RestartButton" unique_id=232422137]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

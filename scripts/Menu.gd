@@ -1,4 +1,5 @@
 extends Control
+ 
 
 @onready var play_button: BaseButton = $VBox/PlayButton
 @onready var restart_button: BaseButton = $VBox/RestartButton
