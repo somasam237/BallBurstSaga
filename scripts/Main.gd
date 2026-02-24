@@ -17,12 +17,14 @@ extends Node2D
 @onready var score_label        = $UI/HUD/ScoreLabel
 @onready var moves_label        = $UI/HUD/MovesLabel
 @onready var goal_label         = $UI/HUD/GoalLabel
-@onready var hint_button        = $UI/HUD/HintButton
+@onready var hint_classic_button = $UI/HUD/HintClassicButton
+@onready var hint_best_button    = $UI/HUD/HintBestButton
 @onready var restart_button     = $UI/HUD/RestartButton
 @onready var menu_button        = $UI/HUD/MenuButton
 @onready var pause_button       = $UI/HUD/PauseButton
 @onready var message_label      = $UI/HUD/MessageLabel
 @onready var level_label        = $UI/HUD/LevelLabel
+@onready var level_bg           = $UI/HUD/LevelBG
 @onready var gameplay_music     = $GameplayMusic
 @onready var match_sfx          = $MatchSfx
 @onready var pause_ui           = $PauseUI
@@ -461,6 +463,12 @@ func _center_board():
 	board_bg.position = board.position
 	board_bg.size     = scaled
 
+	# Place level badge below the board, centered on the grid.
+	var level_y = board.position.y + scaled.y + 14.0
+	var level_x = board.position.x + (scaled.x - level_bg.size.x) * 0.5
+	level_bg.position = Vector2(level_x, level_y)
+	level_label.position = level_bg.position
+
 # ============================================================
 #  BOARD SIGNALS
 # ============================================================
@@ -477,6 +485,28 @@ func _on_moves_used(remaining):
 func _on_message(t):
 	message_label.text = t
 
+func _on_hint_classic_pressed():
+	if not board.can_pay_hint_cost(1):
+		message_label.text = "Not enough moves for Classic Hint."
+		return
+	if not board.show_classic_hint():
+		message_label.text = "No classic hint found."
+		return
+	board.pay_hint_cost(1)
+	message_label.text = "Classic hint shown. -1 move"
+
+func _on_hint_best_pressed():
+	if not board.can_pay_hint_cost(5):
+		message_label.text = "Not enough moves for Best Hint."
+		return
+	var hint = board.show_best_hint()
+	if hint.is_empty():
+		message_label.text = "No best hint found."
+		return
+	board.pay_hint_cost(5)
+	var score = int(hint.get("score", 0))
+	message_label.text = "Best hint shown (-5 moves, score: " + str(score) + ")."
+
 # ============================================================
 #  UI SETUP
 # ============================================================
@@ -487,7 +517,8 @@ func _setup_ui():
 	goal_label.visible    = true;  goal_label.z_index    = 100
 	message_label.visible = true;  message_label.z_index = 100
 
-	hint_button.pressed.connect(_on_hint_pressed)
+	hint_classic_button.pressed.connect(_on_hint_classic_pressed)
+	hint_best_button.pressed.connect(_on_hint_best_pressed)
 	restart_button.pressed.connect(_ask_full_reset_confirm)
 	menu_button.pressed.connect(_on_menu_pressed)
 
