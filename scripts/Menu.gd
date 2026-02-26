@@ -15,9 +15,11 @@ var screen_width: float
 var girl_start_x: float
 var girl_ground_y: float = 720.0
 
+var _confirm_layer = null   # dialog confirmation restart
+
 func _ready():
 	play_button.pressed.connect(_play)
-	restart_button.pressed.connect(_restart)
+	restart_button.pressed.connect(_ask_restart_confirm)
 
 	if menu_music.stream is AudioStreamMP3:
 		menu_music.stream.loop = true
@@ -32,6 +34,7 @@ func _ready():
 	# Lance toutes les animations
 	_animate_title_entrance()
 	_animate_girl()
+	_build_restart_confirm_dialog() 
 
 # ══════════════════════════════════════════════════
 #   ENTRÉE DU TITRE - Apparition en cascade
@@ -161,7 +164,7 @@ func _saga_loop() -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _saga_flip_loop() -> void:
-	# Simule un flip 3D toutes les 4 secondes
+	# Simulate a flip 3D every  4 secondes
 	await get_tree().create_timer(4.0).timeout
 	
 	var t = create_tween()
@@ -179,7 +182,7 @@ func _saga_flip_loop() -> void:
 	_saga_flip_loop()
 
 # ══════════════════════════════════════════════════
-#   ANIMATION FILLE
+#   ANIMATION girl
 # ══════════════════════════════════════════════════
 func _animate_girl() -> void:
 	_girl_sequence()
@@ -231,16 +234,150 @@ func _girl_run_to(target_x: float, duration: float) -> void:
 # ══════════════════════════════════════════════════
 #   BOUTONS
 # ══════════════════════════════════════════════════
+# ══════════════════════════════════════════════════
+#   BOUTON PLAY  – Reprend là où le joueur s'est arrêté
+#   Ne touche à RIEN, charge juste la sauvegarde.
+# ══════════════════════════════════════════════════
 func _play() -> void:
 	click_sfx.play()
 	menu_music.stop()
-	GameState.load_progress()
+	GameState.load_progress()   # charge niveau, nom, profil KI sauvegardés
+	await get_tree().create_timer(0.1).timeout
+	get_tree().change_scene_to_file("res://scenes/main.tscn")
+	# Main.gd verra que player_name != "" et commencera directement
+	# au niveau sauvegardé, sans passer par le welcome screen.
+
+
+# ══════════════════════════════════════════════════
+#   BOUTON RESTART  – Demande confirmation d'abord
+# ══════════════════════════════════════════════════
+func _ask_restart_confirm() -> void:
+	click_sfx.play()
+	_confirm_layer.visible = true
+
+
+# ══════════════════════════════════════════════════
+#   RESET COMPLET  – Appelé après confirmation "Oui"
+#   Supprime les fichiers, remet tout à zéro,
+#   puis va vers main.tscn → welcome screen apparaît
+#   car player_name est vide.
+# ══════════════════════════════════════════════════
+func _do_full_reset() -> void:
+	# 1. Supprime les deux fichiers de sauvegarde sur le disque
+	if FileAccess.file_exists("user://save.cfg"):
+		DirAccess.remove_absolute("user://save.cfg")
+	if FileAccess.file_exists("user://save_game.json"):
+		DirAccess.remove_absolute("user://save_game.json")
+
+	# 2. Remet GameState entièrement aux valeurs par défaut en mémoire
+	GameState.current_level_index = 0
+	GameState.player_name         = ""     # ← vide = welcome screen s'affichera
+	GameState.player_profile      = {
+		"win_rate":            0.5,
+		"avg_moves_ratio":     0.7,
+		"hint_usage_rate":     0.3,
+		"consecutive_wins":    0,
+		"consecutive_losses":  0,
+		"total_sessions":      0,
+	}
+
+	# 3. Va vers la scène de jeu
+	# Main.gd verra player_name == "" et affichera le welcome screen
+	menu_music.stop()
 	await get_tree().create_timer(0.1).timeout
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
-func _restart() -> void:
-	click_sfx.play()
-	menu_music.stop()
-	GameState.set_current_level(0)
-	await get_tree().create_timer(0.1).timeout
-	get_tree().change_scene_to_file("res://scenes/main.tscn")
+
+# ══════════════════════════════════════════════════
+#   DIALOG DE CONFIRMATION (construit en code)
+# ══════════════════════════════════════════════════
+func _build_restart_confirm_dialog() -> void:
+	var vp = get_viewport_rect().size
+
+	_confirm_layer              = CanvasLayer.new()
+	_confirm_layer.name         = "ConfirmLayer"
+	_confirm_layer.visible      = false
+	_confirm_layer.layer        = 20     # au-dessus de tout
+	add_child(_confirm_layer)
+
+	# Fond sombre semi-transparent
+	var backdrop          = ColorRect.new()
+	backdrop.color        = Color(0, 0, 0, 0.65)
+	backdrop.size         = vp
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	_confirm_layer.add_child(backdrop)
+
+	# Carte centrale
+	var card              = PanelContainer.new()
+	card.size             = Vector2(430, 245)
+	card.position         = vp / 2.0 - card.size / 2.0
+	_confirm_layer.add_child(card)
+
+	var vbox              = VBoxContainer.new()
+	vbox.alignment        = BoxContainer.ALIGNMENT_CENTER
+	card.add_child(vbox)
+
+	# Icône d'avertissement
+	var icon              = Label.new()
+	icon.text             = "⚠️"
+	icon.add_theme_font_size_override("font_size", 38)
+	icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(icon)
+
+	var sp1               = Control.new()
+	sp1.custom_minimum_size = Vector2(0, 6)
+	vbox.add_child(sp1)
+
+	# Titre
+	var title             = Label.new()
+	title.text            = "Spiel komplett zurücksetzen?"
+	title.add_theme_font_size_override("font_size", 20)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var sp2               = Control.new()
+	sp2.custom_minimum_size = Vector2(0, 5)
+	vbox.add_child(sp2)
+
+	# Message d'avertissement en rouge
+	var sub               = Label.new()
+	sub.text              = "⚠️  Dein Name, alle Level und\ndein KI-Profil werden dauerhaft gelöscht!"
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub.add_theme_color_override("font_color", Color(0.75, 0.15, 0.15))
+	vbox.add_child(sub)
+
+	var sp3               = Control.new()
+	sp3.custom_minimum_size = Vector2(0, 18)
+	vbox.add_child(sp3)
+
+	# Rangée de boutons
+	var hbox              = HBoxContainer.new()
+	hbox.alignment        = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(hbox)
+
+	var btn_yes           = Button.new()
+	btn_yes.text          = "✅  Ja, alles löschen"
+	btn_yes.custom_minimum_size = Vector2(175, 48)
+	btn_yes.add_theme_font_size_override("font_size", 16)
+	hbox.add_child(btn_yes)
+
+	var sp4               = Control.new()
+	sp4.custom_minimum_size = Vector2(16, 0)
+	hbox.add_child(sp4)
+
+	var btn_no            = Button.new()
+	btn_no.text           = "❌  Abbrechen"
+	btn_no.custom_minimum_size = Vector2(135, 48)
+	btn_no.add_theme_font_size_override("font_size", 16)
+	hbox.add_child(btn_no)
+
+	# Oui → reset complet
+	btn_yes.pressed.connect(func():
+		_confirm_layer.visible = false
+		_do_full_reset()
+	)
+
+	# Non → ferme le dialog simplement
+	btn_no.pressed.connect(func():
+		_confirm_layer.visible = false
+	)
