@@ -1,10 +1,5 @@
 extends Node
 
-# ============================================================
-#  ADAPTIVEDIFFCULTY.GD
-#  More aggressive adjustments so the player can actually
-#  feel the difference between Easy and Hard.
-# ============================================================
 
 # Factor weights (must sum to 1.0)
 const W_WIN_RATE    = 0.40
@@ -20,7 +15,7 @@ const TARGET_MAX_MULT  = 1.35   # target can go UP 35% for strong players
 const HINT_DELAY_MIN   = 4.0    # hint fires in 4s for struggling players
 const HINT_DELAY_MAX   = 30.0   # hint fires in 30s for skilled players
 
-# ── Main function: call this in Main.gd at level start ──────
+
 func get_adapted_level(base_level):
 	var d = compute_difficulty_score()
 
@@ -56,8 +51,7 @@ func get_difficulty_percent():
 func compute_difficulty_score():
 	var p = GameState.player_profile
 
-	# Only apply meaningful adjustments after at least 2 sessions
-	# so the first level always starts neutral
+	
 	if int(p["total_sessions"]) < 2:
 		return 0.5
 

@@ -32,7 +32,7 @@ var player_profile = {
 
 const EMA_ALPHA = 0.3
 
-# ─────────────────────────────────────────────────────────────
+
 
 func _ready():
 	_load_progress()

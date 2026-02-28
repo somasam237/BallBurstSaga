@@ -16,9 +16,11 @@ var screen_width: float
 var girl_start_x: float
 var girl_ground_y: float = 720.0
 
+var _confirm_layer = null   # dialog confirmation restart
+
 func _ready():
 	play_button.pressed.connect(_play)
-	restart_button.pressed.connect(_restart)
+	restart_button.pressed.connect(_ask_restart_confirm)
 
 	if menu_music.stream is AudioStreamMP3:
 		menu_music.stream.loop = true
@@ -33,6 +35,7 @@ func _ready():
 	# Lance toutes les animations
 	_animate_title_entrance()
 	_animate_girl()
+	_build_restart_confirm_dialog() 
 
 # ══════════════════════════════════════════════════
 #   ENTRÉE DU TITRE - Apparition en cascade
@@ -86,9 +89,9 @@ func _pop_in(node: Node, offset: Vector2, delay: float) -> void:
 	t2.tween_property(node, "scale", Vector2(1.0, 1.0), 0.2)\
 		.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 
-# ══════════════════════════════════════════════════
-#   BALL - Rebond + rotation légère en boucle
-# ══════════════════════════════════════════════════
+
+#   BALL - Rebond 
+
 func _ball_loop() -> void:
 	var origin_y = ball_img.position.y
 	var t = create_tween().set_loops()
@@ -116,9 +119,9 @@ func _ball_shimmer() -> void:
 	t.tween_property(ball_img, "self_modulate", Color(1.0, 1.0, 1.0, 1.0), 0.3)
 	_ball_shimmer()  # rappel récursif
 
-# ══════════════════════════════════════════════════
-#   BURST - Pulse scale + effet d'impact
-# ══════════════════════════════════════════════════
+
+#   BURST - Pulse scale 
+
 func _burst_loop() -> void:
 	var t = create_tween().set_loops()
 
@@ -130,16 +133,16 @@ func _burst_loop() -> void:
 	t.tween_property(burst_img, "scale", Vector2(1.0, 1.0), 0.2)\
 		.set_trans(Tween.TRANS_BOUNCE)
 
-	# Cycle de teinte en parallèle
+	
 	_burst_color_cycle()
 
 func _burst_color_cycle() -> void:
 	var colors = [
-		Color(1.0, 0.6, 1.0),   # rose candy
-		Color(0.6, 1.0, 0.6),   # vert lime
-		Color(1.0, 1.0, 0.5),   # jaune doré
-		Color(0.6, 0.8, 1.0),   # bleu ciel
-		Color(1.0, 1.0, 1.0),   # blanc normal
+		Color(1.0, 0.6, 1.0),   
+		Color(0.6, 1.0, 0.6),   
+		Color(1.0, 1.0, 0.5),  
+		Color(0.6, 0.8, 1.0),   
+		Color(1.0, 1.0, 1.0),   
 	]
 	var t = create_tween().set_loops()
 	for c in colors:
@@ -147,13 +150,13 @@ func _burst_color_cycle() -> void:
 			.set_trans(Tween.TRANS_SINE)
 
 # ══════════════════════════════════════════════════
-#   SAGA - Rotation 3D simulée + scale wave
+#   SAGA - Rotation 3D  + scale wave
 # ══════════════════════════════════════════════════
 func _saga_loop() -> void:
-	# Effet "flip" simulé sur X (effet 3D)
+	
 	_saga_flip_loop()
 	
-	# Bounce vertical décalé
+	# Bounce  
 	var origin_y = saga_img.position.y
 	var t = create_tween().set_loops()
 	t.tween_property(saga_img, "position:y", origin_y - 12, 0.7)\
@@ -162,16 +165,16 @@ func _saga_loop() -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _saga_flip_loop() -> void:
-	# Simule un flip 3D toutes les 4 secondes
+	# Simulate a flip 3D every  4 secondes
 	await get_tree().create_timer(4.0).timeout
 	
 	var t = create_tween()
-	# Rétrécit sur X (disparaît)
+	
 	t.tween_property(saga_img, "scale:x", 0.0, 0.2)\
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	# Flash de couleur au milieu du flip
+	
 	t.tween_callback(func(): saga_img.self_modulate = Color(1.5, 1.0, 1.5))
-	# Réapparaît
+	# 
 	t.tween_property(saga_img, "scale:x", 1.0, 0.2)\
 		.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 	t.tween_callback(func(): saga_img.self_modulate = Color(1.0, 1.0, 1.0))
@@ -180,7 +183,7 @@ func _saga_flip_loop() -> void:
 	_saga_flip_loop()
 
 # ══════════════════════════════════════════════════
-#   ANIMATION FILLE
+#   ANIMATION girl
 # ══════════════════════════════════════════════════
 func _animate_girl() -> void:
 	_girl_sequence()
@@ -229,19 +232,138 @@ func _girl_run_to(target_x: float, duration: float) -> void:
 	bounce.kill()
 	girl.position.y = girl_ground_y
 
-# ══════════════════════════════════════════════════
-#   BOUTONS
-# ══════════════════════════════════════════════════
+
 func _play() -> void:
 	click_sfx.play()
 	menu_music.stop()
-	GameState.load_progress()
+	GameState.load_progress()  
+	await get_tree().create_timer(0.1).timeout
+	get_tree().change_scene_to_file("res://scenes/main.tscn")
+	
+
+
+
+# ══════════════════════════════════════════════════
+func _ask_restart_confirm() -> void:
+	click_sfx.play()
+	_confirm_layer.visible = true
+
+
+
+func _do_full_reset() -> void:
+
+	if FileAccess.file_exists("user://save.cfg"):
+		DirAccess.remove_absolute("user://save.cfg")
+	if FileAccess.file_exists("user://save_game.json"):
+		DirAccess.remove_absolute("user://save_game.json")
+
+
+	GameState.current_level_index = 0
+	GameState.player_name         = ""     
+	GameState.player_profile      = {
+		"win_rate":            0.5,
+		"avg_moves_ratio":     0.7,
+		"hint_usage_rate":     0.3,
+		"consecutive_wins":    0,
+		"consecutive_losses":  0,
+		"total_sessions":      0,
+	}
+
+	
+	menu_music.stop()
 	await get_tree().create_timer(0.1).timeout
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
-func _restart() -> void:
-	click_sfx.play()
-	menu_music.stop()
-	GameState.set_current_level(0)
-	await get_tree().create_timer(0.1).timeout
-	get_tree().change_scene_to_file("res://scenes/main.tscn")
+
+
+
+func _build_restart_confirm_dialog() -> void:
+	var vp = get_viewport_rect().size
+
+	_confirm_layer              = CanvasLayer.new()
+	_confirm_layer.name         = "ConfirmLayer"
+	_confirm_layer.visible      = false
+	_confirm_layer.layer        = 20     
+	add_child(_confirm_layer)
+
+	
+	var backdrop          = ColorRect.new()
+	backdrop.color        = Color(0, 0, 0, 0.65)
+	backdrop.size         = vp
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	_confirm_layer.add_child(backdrop)
+
+	
+	var card              = PanelContainer.new()
+	card.size             = Vector2(430, 245)
+	card.position         = vp / 2.0 - card.size / 2.0
+	_confirm_layer.add_child(card)
+
+	var vbox              = VBoxContainer.new()
+	vbox.alignment        = BoxContainer.ALIGNMENT_CENTER
+	card.add_child(vbox)
+
+	
+	var icon              = Label.new()
+	icon.text             = "⚠️"
+	icon.add_theme_font_size_override("font_size", 38)
+	icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(icon)
+
+	var sp1               = Control.new()
+	sp1.custom_minimum_size = Vector2(0, 6)
+	vbox.add_child(sp1)
+
+	
+	var title             = Label.new()
+	title.text            = "Spiel komplett zurücksetzen?"
+	title.add_theme_font_size_override("font_size", 20)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var sp2               = Control.new()
+	sp2.custom_minimum_size = Vector2(0, 5)
+	vbox.add_child(sp2)
+
+
+	var sub               = Label.new()
+	sub.text              = "⚠️  Dein Name, alle Level und\ndein KI-Profil werden dauerhaft gelöscht!"
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub.add_theme_color_override("font_color", Color(0.75, 0.15, 0.15))
+	vbox.add_child(sub)
+
+	var sp3               = Control.new()
+	sp3.custom_minimum_size = Vector2(0, 18)
+	vbox.add_child(sp3)
+
+
+	var hbox              = HBoxContainer.new()
+	hbox.alignment        = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(hbox)
+
+	var btn_yes           = Button.new()
+	btn_yes.text          = "✅  Ja, alles löschen"
+	btn_yes.custom_minimum_size = Vector2(175, 48)
+	btn_yes.add_theme_font_size_override("font_size", 16)
+	hbox.add_child(btn_yes)
+
+	var sp4               = Control.new()
+	sp4.custom_minimum_size = Vector2(16, 0)
+	hbox.add_child(sp4)
+
+	var btn_no            = Button.new()
+	btn_no.text           = "❌  Abbrechen"
+	btn_no.custom_minimum_size = Vector2(135, 48)
+	btn_no.add_theme_font_size_override("font_size", 16)
+	hbox.add_child(btn_no)
+
+	
+	btn_yes.pressed.connect(func():
+		_confirm_layer.visible = false
+		_do_full_reset()
+	)
+
+
+	btn_no.pressed.connect(func():
+		_confirm_layer.visible = false
+	)

@@ -1,16 +1,5 @@
 extends Node2D
 
-# ============================================================
-#  MAIN.GD  – Ball Burst Saga
-#  FIXES in this version:
-#   1. Confirm dialog always appears ON TOP of end_ui
-#      (CanvasLayer.layer set to a high value)
-#   2. AdaptiveDifficulty shows visible HUD indicator
-#      so you can actually see the level changing
-#   3. Welcome screen is animated: bouncing balls, stars,
-#      sun pulse, floating emojis, game-style text
-# ============================================================
-
 @onready var board              = $Board
 @onready var background         = $Background
 @onready var board_bg           = $BoardBG
@@ -50,7 +39,7 @@ var _welcome_layer   = null
 var _confirm_layer   = null
 var _flash_overlay   = null
 var _name_label_hud  = null
-var _diff_label_hud  = null   # shows "KI: Mittel" in HUD
+var _diff_label_hud  = null  
 
 # ============================================================
 #  LIFECYCLE
@@ -91,9 +80,8 @@ func _ready():
 	else:
 		_begin_game()
 
-# ============================================================
 #  ANIMATED WELCOME SCREEN
-# ============================================================
+
 
 func _show_welcome_screen():
 	var vp = get_viewport_rect().size
@@ -104,9 +92,11 @@ func _show_welcome_screen():
 	_welcome_layer.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(_welcome_layer)
 
+
+
 	# ── Deep candy-purple background ─────────────────────────
 	var bg        = ColorRect.new()
-	bg.color      = Color(0.13, 0.07, 0.28, 1.0)   # deep purple
+	bg.color      = Color(0.13, 0.07, 0.28, 1.0)   
 	bg.size       = vp
 	_welcome_layer.add_child(bg)
 
@@ -576,7 +566,7 @@ func _update_diff_label():
 		return
 	var label   = adaptive.get_label()
 	var pct     = adaptive.get_difficulty_percent()
-	# _diff_label_hud.text = "🤖 KI: " + label + " (" + str(pct) + "%)", we don't need this label.
+	# _diff_label_hud.text = "KI: " + label + " (" + str(pct) + "%)", we don't need this label.
 	# Color the label: green=easy, yellow=medium, red=hard
 	var d = adaptive.compute_difficulty_score()
 	if   d < 0.4:  _diff_label_hud.add_theme_color_override("font_color", Color(0.3, 1.0, 0.4))
