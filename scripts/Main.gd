@@ -80,9 +80,8 @@ func _ready():
 	else:
 		_begin_game()
 
-# ============================================================
 #  ANIMATED WELCOME SCREEN
-# ============================================================
+
 
 func _show_welcome_screen():
 	var vp = get_viewport_rect().size

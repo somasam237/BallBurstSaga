@@ -88,9 +88,9 @@ func _pop_in(node: Node, offset: Vector2, delay: float) -> void:
 	t2.tween_property(node, "scale", Vector2(1.0, 1.0), 0.2)\
 		.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 
-# ══════════════════════════════════════════════════
-#   BALL - Rebond + rotation légère en boucle
-# ══════════════════════════════════════════════════
+
+#   BALL - Rebond 
+
 func _ball_loop() -> void:
 	var origin_y = ball_img.position.y
 	var t = create_tween().set_loops()
@@ -118,9 +118,9 @@ func _ball_shimmer() -> void:
 	t.tween_property(ball_img, "self_modulate", Color(1.0, 1.0, 1.0, 1.0), 0.3)
 	_ball_shimmer()  # rappel récursif
 
-# ══════════════════════════════════════════════════
-#   BURST - Pulse scale + effet d'impact
-# ══════════════════════════════════════════════════
+
+#   BURST - Pulse scale 
+
 func _burst_loop() -> void:
 	var t = create_tween().set_loops()
 
@@ -132,16 +132,16 @@ func _burst_loop() -> void:
 	t.tween_property(burst_img, "scale", Vector2(1.0, 1.0), 0.2)\
 		.set_trans(Tween.TRANS_BOUNCE)
 
-	# Cycle de teinte en parallèle
+	
 	_burst_color_cycle()
 
 func _burst_color_cycle() -> void:
 	var colors = [
-		Color(1.0, 0.6, 1.0),   # rose candy
-		Color(0.6, 1.0, 0.6),   # vert lime
-		Color(1.0, 1.0, 0.5),   # jaune doré
-		Color(0.6, 0.8, 1.0),   # bleu ciel
-		Color(1.0, 1.0, 1.0),   # blanc normal
+		Color(1.0, 0.6, 1.0),   
+		Color(0.6, 1.0, 0.6),   
+		Color(1.0, 1.0, 0.5),  
+		Color(0.6, 0.8, 1.0),   
+		Color(1.0, 1.0, 1.0),   
 	]
 	var t = create_tween().set_loops()
 	for c in colors:
@@ -149,13 +149,13 @@ func _burst_color_cycle() -> void:
 			.set_trans(Tween.TRANS_SINE)
 
 # ══════════════════════════════════════════════════
-#   SAGA - Rotation 3D simulée + scale wave
+#   SAGA - Rotation 3D  + scale wave
 # ══════════════════════════════════════════════════
 func _saga_loop() -> void:
-	# Effet "flip" simulé sur X (effet 3D)
+	
 	_saga_flip_loop()
 	
-	# Bounce vertical décalé
+	# Bounce  
 	var origin_y = saga_img.position.y
 	var t = create_tween().set_loops()
 	t.tween_property(saga_img, "position:y", origin_y - 12, 0.7)\
@@ -168,12 +168,12 @@ func _saga_flip_loop() -> void:
 	await get_tree().create_timer(4.0).timeout
 	
 	var t = create_tween()
-	# Rétrécit sur X (disparaît)
+	
 	t.tween_property(saga_img, "scale:x", 0.0, 0.2)\
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	# Flash de couleur au milieu du flip
+	
 	t.tween_callback(func(): saga_img.self_modulate = Color(1.5, 1.0, 1.5))
-	# Réapparaît
+	# 
 	t.tween_property(saga_img, "scale:x", 1.0, 0.2)\
 		.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 	t.tween_callback(func(): saga_img.self_modulate = Color(1.0, 1.0, 1.0))
@@ -231,47 +231,34 @@ func _girl_run_to(target_x: float, duration: float) -> void:
 	bounce.kill()
 	girl.position.y = girl_ground_y
 
-# ══════════════════════════════════════════════════
-#   BOUTONS
-# ══════════════════════════════════════════════════
-# ══════════════════════════════════════════════════
-#   BOUTON PLAY  – Reprend là où le joueur s'est arrêté
-#   Ne touche à RIEN, charge juste la sauvegarde.
-# ══════════════════════════════════════════════════
+
 func _play() -> void:
 	click_sfx.play()
 	menu_music.stop()
-	GameState.load_progress()   # charge niveau, nom, profil KI sauvegardés
+	GameState.load_progress()  
 	await get_tree().create_timer(0.1).timeout
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
-	# Main.gd verra que player_name != "" et commencera directement
-	# au niveau sauvegardé, sans passer par le welcome screen.
+	
 
 
-# ══════════════════════════════════════════════════
-#   BOUTON RESTART  – Demande confirmation d'abord
+
 # ══════════════════════════════════════════════════
 func _ask_restart_confirm() -> void:
 	click_sfx.play()
 	_confirm_layer.visible = true
 
 
-# ══════════════════════════════════════════════════
-#   RESET COMPLET  – Appelé après confirmation "Oui"
-#   Supprime les fichiers, remet tout à zéro,
-#   puis va vers main.tscn → welcome screen apparaît
-#   car player_name est vide.
-# ══════════════════════════════════════════════════
+
 func _do_full_reset() -> void:
-	# 1. Supprime les deux fichiers de sauvegarde sur le disque
+
 	if FileAccess.file_exists("user://save.cfg"):
 		DirAccess.remove_absolute("user://save.cfg")
 	if FileAccess.file_exists("user://save_game.json"):
 		DirAccess.remove_absolute("user://save_game.json")
 
-	# 2. Remet GameState entièrement aux valeurs par défaut en mémoire
+
 	GameState.current_level_index = 0
-	GameState.player_name         = ""     # ← vide = welcome screen s'affichera
+	GameState.player_name         = ""     
 	GameState.player_profile      = {
 		"win_rate":            0.5,
 		"avg_moves_ratio":     0.7,
@@ -281,33 +268,31 @@ func _do_full_reset() -> void:
 		"total_sessions":      0,
 	}
 
-	# 3. Va vers la scène de jeu
-	# Main.gd verra player_name == "" et affichera le welcome screen
+	
 	menu_music.stop()
 	await get_tree().create_timer(0.1).timeout
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 
-# ══════════════════════════════════════════════════
-#   DIALOG DE CONFIRMATION (construit en code)
-# ══════════════════════════════════════════════════
+
+
 func _build_restart_confirm_dialog() -> void:
 	var vp = get_viewport_rect().size
 
 	_confirm_layer              = CanvasLayer.new()
 	_confirm_layer.name         = "ConfirmLayer"
 	_confirm_layer.visible      = false
-	_confirm_layer.layer        = 20     # au-dessus de tout
+	_confirm_layer.layer        = 20     
 	add_child(_confirm_layer)
 
-	# Fond sombre semi-transparent
+	
 	var backdrop          = ColorRect.new()
 	backdrop.color        = Color(0, 0, 0, 0.65)
 	backdrop.size         = vp
 	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
 	_confirm_layer.add_child(backdrop)
 
-	# Carte centrale
+	
 	var card              = PanelContainer.new()
 	card.size             = Vector2(430, 245)
 	card.position         = vp / 2.0 - card.size / 2.0
@@ -317,7 +302,7 @@ func _build_restart_confirm_dialog() -> void:
 	vbox.alignment        = BoxContainer.ALIGNMENT_CENTER
 	card.add_child(vbox)
 
-	# Icône d'avertissement
+	
 	var icon              = Label.new()
 	icon.text             = "⚠️"
 	icon.add_theme_font_size_override("font_size", 38)
@@ -328,7 +313,7 @@ func _build_restart_confirm_dialog() -> void:
 	sp1.custom_minimum_size = Vector2(0, 6)
 	vbox.add_child(sp1)
 
-	# Titre
+	
 	var title             = Label.new()
 	title.text            = "Spiel komplett zurücksetzen?"
 	title.add_theme_font_size_override("font_size", 20)
@@ -339,7 +324,7 @@ func _build_restart_confirm_dialog() -> void:
 	sp2.custom_minimum_size = Vector2(0, 5)
 	vbox.add_child(sp2)
 
-	# Message d'avertissement en rouge
+
 	var sub               = Label.new()
 	sub.text              = "⚠️  Dein Name, alle Level und\ndein KI-Profil werden dauerhaft gelöscht!"
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -350,7 +335,7 @@ func _build_restart_confirm_dialog() -> void:
 	sp3.custom_minimum_size = Vector2(0, 18)
 	vbox.add_child(sp3)
 
-	# Rangée de boutons
+
 	var hbox              = HBoxContainer.new()
 	hbox.alignment        = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_child(hbox)
@@ -371,13 +356,13 @@ func _build_restart_confirm_dialog() -> void:
 	btn_no.add_theme_font_size_override("font_size", 16)
 	hbox.add_child(btn_no)
 
-	# Oui → reset complet
+	
 	btn_yes.pressed.connect(func():
 		_confirm_layer.visible = false
 		_do_full_reset()
 	)
 
-	# Non → ferme le dialog simplement
+
 	btn_no.pressed.connect(func():
 		_confirm_layer.visible = false
 	)

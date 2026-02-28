@@ -36,9 +36,8 @@ var hint_tween = null
 # ── Combo tracking (reset each swap, counts cascades) ──
 var _combo_count = 0
 
-# ============================================================
 #  LIFECYCLE
-# ============================================================
+
 
 func _ready():
 	new_game()
@@ -256,7 +255,7 @@ func _swap_pieces_in_grid(a, b):
 	a.grid_x = bx;      a.grid_y = by
 	b.grid_x = ax;      b.grid_y = ay
 
-# Virtual swap used by AIAdvisor – swaps kind values only, no grid update
+# Virtual swap 
 func _virtual_swap(a, b):
 	var tmp = a.kind
 	a.kind  = b.kind
@@ -312,7 +311,7 @@ func _combo_label(cnt):
 	return            "✨ GREAT! x"     + str(cnt)
 
 # ============================================================
-#  MATCH ANIMATIONS  (Candy Crush style)
+#  MATCH ANIMATIONS  
 # ============================================================
 
 # Compute the average world position of a set of matched pieces
@@ -322,7 +321,7 @@ func _get_match_center(matches):
 		sum += board_to_world(p.grid_x, p.grid_y)
 	return sum / float(matches.size())
 
-# Main entry point – decides which animation to play
+# Main entry point. decides which animation to play
 func _play_match_animation(matches, count, center_world):
 	if count >= 4:
 		_spawn_big_match_burst(matches, count, center_world)
@@ -356,7 +355,7 @@ func _spawn_big_match_burst(matches, count, center_world):
 	for p in matches:
 		_shake_piece(p)
 
-# ── Spawn a Label that floats upward then fades out ─────────
+# Spawn a Label that floats upward then fades out
 # big = true makes the label larger and more dramatic
 func _spawn_floating_text(text, world_pos, color, scale_mult = 1.0, big = false):
 	var lbl        = Label.new()
@@ -516,7 +515,7 @@ func _check_end():
 		emit_signal("message",   "😵 Out of moves! Try again.")
 		emit_signal("game_over", false)
 
-# -------- Hint (still non-AI) --------
+#  Hint 
 func _build_kind_grid() -> Array:
 	var kind_grid: Array = []
 	for x in range(width):
